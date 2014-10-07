@@ -7,13 +7,16 @@
 JAVAC = javac
 
 # Java compiler flags
-JAVAFLAGS = -g 
+JAVAFLAGS = -g -classpath bin
 
 # Creating a .class file
 COMPILE = $(JAVAC) $(JAVAFLAGS)
 
+SOURCE_FILES = src/OutputHandler.java src/Lex.java src/MyInt.java #$(wildcard src/*.java)
+
+
 # One of these should be the "main" class listed in Runfile
-CLASS_FILES = MyInt.class Foo.class
+CLASS_FILES = $(shell echo $(SOURCE_FILES) | sed s/src/bin/g | sed s/.java/.class/g)
 
 # The first target is the one that is executed when you invoke
 # "make". 
@@ -21,9 +24,10 @@ CLASS_FILES = MyInt.class Foo.class
 all: $(CLASS_FILES) 
 
 # The line describing the action starts with <TAB>
-%.class : %.java
-	$(COMPILE) $<
+bin/%.class : src/%.java
+	$(COMPILE) $^ -d bin
 
-
+clean:
+	rm -rf bin/*.class
 
 
