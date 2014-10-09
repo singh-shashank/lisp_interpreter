@@ -4,17 +4,16 @@ import java.io.FileReader;
 import java.util.*;
 
 /* TODO :
-1) Implement a Token class and replace "String" for tokenQ
-2) Process the raw word to a token class before putting in the queue.
-3) Change "EOF" string to something else
+
 */
 
 class Lex { 
 
-    private static String ErrorString1 = "A numeral atom can begin with '+' or '-' and should" +
+    private static String ErrorString1 = "\nA numeral atom can begin with '+' or '-' and should" +
                                          " consists of digits(0-9) following it."+
-                                         " A literal atom has to begin with a letter and can be" +
+                                         "\nA literal atom has to begin with a letter and can be" +
                                          " followed by arbitrary numbers of letters or digits"; 
+    private static String EndOfFile = "#EOF";
 	private OutputHandler out;
 	private String inputFile;
     BufferedReader br;
@@ -29,22 +28,27 @@ class Lex {
         String line;
         if((line = br.readLine()) != null)
         {
+            System.out.println(line);
             StringTokenizer scanLine = new StringTokenizer(line);
             while(scanLine.hasMoreTokens())
             {
                 // Split at paranthesis
-                StringTokenizer parts = new StringTokenizer(scanLine.nextToken().toUpperCase(), "\\(|\\)", true);
+                String t1 = scanLine.nextToken().toUpperCase();
+                System.out.println(t1);
+                StringTokenizer parts = new StringTokenizer(t1, "\\(|\\)", true);
                 while(parts.hasMoreTokens())
                 {
                     //tokensQ.add(scanLine.nextToken().toUpperCase());
-                    convertToToken(parts.nextToken());
+                    String t = parts.nextToken();
+                    System.out.println(t);
+                    convertToToken(t);
                 }
             }
         }
         else
         {
             // push EOF here
-            convertToToken("EOF");
+            convertToToken(EndOfFile);
             br.close();
         }
 
@@ -86,6 +90,15 @@ class Lex {
             return false;
     }
 
+    private boolean isLetter(char c)
+    {
+        if((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
+            return true;
+        else
+            return false;
+
+    }
+
     void convertToToken(String value) throws LispIntException
     {
         Token result = new Token();
@@ -102,7 +115,7 @@ class Lex {
         {
             result = new Token(value, Token.TokenType.CLOSE_PARAN);
         }
-        else if(value.equals("EOF"))
+        else if(value.equals(EndOfFile))
         {
             result = new Token(value, Token.TokenType.EOF);
         }
@@ -118,26 +131,55 @@ class Lex {
                 {
                     if(!isDigit(value.charAt(i)))
                     {
-                        throw new LispIntException("Token '" + value +
+                        handleErrorToken(value, "Token '" + value +
                             "' started with either '+' or '-' or a digit but is not a valid numeral atom." + 
-                            ErrorString1
-                            , new Exception());
+                            ErrorString1);
+                        return;
                     }
                 }
                 result = new NumeralAtom(value);
             }
-            else
+            else if(isLetter(value.charAt(0)))
             {
                 // can be a literal atom
+                for(int i = 1; i<value.length(); ++i)
+                {
+                    if( !(isLetter(value.charAt(i)) || isDigit(value.charAt(i))) )
+                    {
+                        handleErrorToken(value, "Token '" + value +
+                                        "' started with a letter but is not a valid literal atom." +
+                                        ErrorString1);
+                        return;
+                    }
+                }
                 result = new LiteralAtom(value);
+            }
+            else
+            {
+                handleErrorToken(value, "Token '" + value +
+                    "' is not a valid token." + 
+                    ErrorString1);
+                return;
             }
         }
         else
         {
-            throw new LispIntException("Huh? An empty string token encountered! This shouldn't have happened!!",
-                new Exception());
+            handleErrorToken(value, "Huh? An empty string token encountered! This shouldn't have happened!!");
+            return;
         }
 
         tokensQ.add(result);
+    }
+
+    private void handleErrorToken(String value, String msg) throws LispIntException
+    {
+        if(out.isContOnError)
+        {
+            tokensQ.add(new ErrorAtom(value, msg));
+        }
+        else
+        {
+            throw new LispIntException(msg, new Exception());
+        }
     }
 }

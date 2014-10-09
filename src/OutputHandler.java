@@ -3,6 +3,8 @@ class OutputHandler{
 	private String errorMsg = "";
 	private String prettyPrint = "";
 
+	public static boolean isContOnError = false;
+
 	public OutputHandler()
 	{
 
@@ -29,5 +31,15 @@ class OutputHandler{
 		{
 			System.out.println("All is well");
 		}
+	}
+
+	public void dump(String message)
+	{
+		System.out.println(message);
+	}
+
+	public void dumpError(String message)
+	{
+		System.out.println("ERROR: " + message);
 	}
 }

@@ -87,3 +87,19 @@ class LiteralAtom extends Token
 		return literalValue;
 	}
 }
+
+class ErrorAtom extends Token
+{
+	private String errorString;
+
+	ErrorAtom(String s, String msg)
+	{
+		super(s, TokenType.ERROR);
+		errorString = msg;
+	}
+
+	String getErrorString()
+	{
+		return errorString;
+	}
+}

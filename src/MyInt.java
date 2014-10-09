@@ -44,6 +44,13 @@ class LispInt
 					}
 				}
 			}
+			if(args.length >= 5 && args[4] != null)
+			{
+				if(args[4].equals("-cont"))
+				{
+					out.isContOnError = true;
+				}
+			}
 		}
 	}
 
@@ -57,13 +64,20 @@ class LispInt
 			Token token = lex.getNextToken();
 			while(token.getTokenType() !=  Token.TokenType.EOF)
 			{
-				System.out.println(token.getTokenStringValue() + " - " + token.getTokenType().toString());
+				if(token instanceof ErrorAtom)
+				{
+					System.out.println("\n" + token.getTokenStringValue() + " - " + ((ErrorAtom)token).getErrorString());
+				}
+				else
+				{
+					System.out.println("\n" + token.getTokenStringValue() + " - " + token.getTokenType().toString());
+				}
 				token = lex.getNextToken();
 			}
 		}
 		catch(LispIntException lie)
 		{
-			out.errorMessage("\nException Caught - " + lie.getCustomMessage());
+			out.errorMessage("Exception caught : " + lie.getCustomMessage());
 			//out.errorMessage("\nDumping stack trace");
 			lie.printStackTrace();
 			//log.info (e.getMessage());
