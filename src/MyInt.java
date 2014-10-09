@@ -54,17 +54,24 @@ class LispInt
 		{
 			parseArgs(args);
 			Lex lex = new Lex(inputFileName, out);			
-			String token = lex.getNextToken();
-			while(!token.equals("EOF"))
+			Token token = lex.getNextToken();
+			while(token.getTokenType() !=  Token.TokenType.EOF)
 			{
-				System.out.println(token);
+				System.out.println(token.getTokenStringValue() + " - " + token.getTokenType().toString());
 				token = lex.getNextToken();
 			}
+		}
+		catch(LispIntException lie)
+		{
+			out.errorMessage("\nException Caught - " + lie.getCustomMessage());
+			//out.errorMessage("\nDumping stack trace");
+			lie.printStackTrace();
+			//log.info (e.getMessage());
 		}
 		catch(Exception e)
 		{
 			out.errorMessage("\nException Caught - " + e.getMessage());
-			out.errorMessage("\nDumping stack trace");
+			//out.errorMessage("\nDumping stack trace");
 			e.printStackTrace();
 			//log.info (e.getMessage());
 		}

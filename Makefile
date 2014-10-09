@@ -12,7 +12,8 @@ JAVAFLAGS = -g -classpath bin
 # Creating a .class file
 COMPILE = $(JAVAC) $(JAVAFLAGS)
 
-SOURCE_FILES = src/OutputHandler.java src/Lex.java src/MyInt.java #$(wildcard src/*.java)
+SOURCE_FILES = src/LispIntException.java src/OutputHandler.java src/Token.java \
+				src/Lex.java src/MyInt.java #$(wildcard src/*.java)
 
 
 # One of these should be the "main" class listed in Runfile
