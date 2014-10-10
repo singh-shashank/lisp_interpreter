@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.util.*;
 
 /* TODO :
@@ -13,7 +14,9 @@ class Lex {
                                          " consists of digits(0-9) following it."+
                                          "\nA literal atom has to begin with a letter and can be" +
                                          " followed by arbitrary numbers of letters or digits"; 
+
     private static String EndOfFile = "#EOF";
+
 	private OutputHandler out;
 	private String inputFile;
     BufferedReader br;
@@ -23,24 +26,28 @@ class Lex {
     {
         if(null == br)
         {
-            br = new BufferedReader(new FileReader(inputFile));
+            if(!inputFile.isEmpty())
+            {
+                br = new BufferedReader(new FileReader(inputFile));
+            }
+            else
+            {
+                br = new BufferedReader(new InputStreamReader(System.in));
+            }
         }
         String line;
         if((line = br.readLine()) != null)
         {
-            System.out.println(line);
             StringTokenizer scanLine = new StringTokenizer(line);
             while(scanLine.hasMoreTokens())
             {
                 // Split at paranthesis
                 String t1 = scanLine.nextToken().toUpperCase();
-                System.out.println(t1);
                 StringTokenizer parts = new StringTokenizer(t1, "\\(|\\)", true);
                 while(parts.hasMoreTokens())
                 {
                     //tokensQ.add(scanLine.nextToken().toUpperCase());
                     String t = parts.nextToken();
-                    System.out.println(t);
                     convertToToken(t);
                 }
             }

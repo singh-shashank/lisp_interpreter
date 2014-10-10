@@ -12,44 +12,51 @@ class LispInt
 
 	private void parseArgs(String[] args) throws Exception
 	{
-		if(args.length == 0)
-		{
-			out.errorMessage("No command line arguments passed - Not yet implemented");
-			throw new Exception();
-		}
-		else if(args.length < 4)
-		{
-			out.errorMessage("Less than 4 arguments passed");
-			throw new Exception();
-		}
-		else
-		{
-			/*System.out.println("Dumping arguments");	
-			for(int i=0;i<args.length; ++i)
-			{
-				System.out.println(i + " " + args[i]);	
-			}*/
-			if(args[0].equals("<"))
-			{
-				if(args[2].equals(">"))
-				{
-					if(!args[1].isEmpty())
-					{
-						inputFileName = args[1];
-						if(!args[3].isEmpty())
-						{
-							outputFileName = args[3];
+		// if(args.length == 0)
+		// {
+		// 	out.errorMessage("No command line arguments passed - Not yet implemented");
+		// 	throw new Exception();
+		// }
+		// else if(args.length < 4)
+		// {
+		// 	out.errorMessage("Less than 4 arguments passed");
+		// 	throw new Exception();
+		// }
+		// else
+		// {
+		// 	// System.out.println("Dumping arguments");	
+		// 	// for(int i=0;i<args.length; ++i)
+		// 	// {
+		// 	// 	System.out.println(i + " " + args[i]);	
+		// 	// }
+		// 	if(args[0].equals("<"))
+		// 	{
+		// 		if(args[2].equals(">"))
+		// 		{
+		// 			if(!args[1].isEmpty())
+		// 			{
+		// 				inputFileName = args[1];
+		// 				if(!args[3].isEmpty())
+		// 				{
+		// 					outputFileName = args[3];
 
-						}
-					}
-				}
-			}
-			if(args.length >= 5 && args[4] != null)
+		// 				}
+		// 			}
+		// 		}
+		// 	}
+		// 	if(args.length >= 5 && args[4] != null)
+		// 	{
+		// 		if(args[4].equals("-cont"))
+		// 		{
+		// 			out.isContOnError = true;
+		// 		}
+		// 	}
+		// }
+		if(args.length == 1)
+		{
+			if(args[0].equals("-cont"))
 			{
-				if(args[4].equals("-cont"))
-				{
-					out.isContOnError = true;
-				}
+				out.isContOnError = true;
 			}
 		}
 	}
@@ -79,7 +86,7 @@ class LispInt
 		{
 			out.errorMessage("Exception caught : " + lie.getCustomMessage());
 			//out.errorMessage("\nDumping stack trace");
-			lie.printStackTrace();
+			//lie.printStackTrace();
 			//log.info (e.getMessage());
 		}
 		catch(Exception e)
