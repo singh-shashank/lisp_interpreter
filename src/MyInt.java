@@ -5,58 +5,22 @@ import java.util.logging.Logger;
 
 class LispInt
 {
-	OutputHandler out = new OutputHandler();
+	OutputHandler out = OutputHandler.getInstance();
 	Logger log = Logger.getLogger(LispInt.class.getName());
 	String inputFileName = "";
 	String outputFileName = "";
 
 	private void parseArgs(String[] args) throws Exception
 	{
-		// if(args.length == 0)
-		// {
-		// 	out.errorMessage("No command line arguments passed - Not yet implemented");
-		// 	throw new Exception();
-		// }
-		// else if(args.length < 4)
-		// {
-		// 	out.errorMessage("Less than 4 arguments passed");
-		// 	throw new Exception();
-		// }
-		// else
-		// {
-		// 	// System.out.println("Dumping arguments");	
-		// 	// for(int i=0;i<args.length; ++i)
-		// 	// {
-		// 	// 	System.out.println(i + " " + args[i]);	
-		// 	// }
-		// 	if(args[0].equals("<"))
-		// 	{
-		// 		if(args[2].equals(">"))
-		// 		{
-		// 			if(!args[1].isEmpty())
-		// 			{
-		// 				inputFileName = args[1];
-		// 				if(!args[3].isEmpty())
-		// 				{
-		// 					outputFileName = args[3];
-
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-		// 	if(args.length >= 5 && args[4] != null)
-		// 	{
-		// 		if(args[4].equals("-cont"))
-		// 		{
-		// 			out.isContOnError = true;
-		// 		}
-		// 	}
-		// }
-		if(args.length == 1)
+		for(int i=0;i<args.length;++i)
 		{
-			if(args[0].equals("-cont"))
+			if(args[i].equals("-cont"))
 			{
 				out.isContOnError = true;
+			}
+			else if(args[i].equals("-bdtg"))
+			{
+				out.isDebug = true;
 			}
 		}
 	}
@@ -67,24 +31,13 @@ class LispInt
 		try
 		{
 			parseArgs(args);
-			Lex lex = new Lex(inputFileName, out);			
-			Token token = lex.getNextToken();
-			while(token.getTokenType() !=  Token.TokenType.EOF)
-			{
-				if(token instanceof ErrorAtom)
-				{
-					System.out.println("\n" + token.getTokenStringValue() + " - " + ((ErrorAtom)token).getErrorString());
-				}
-				else
-				{
-					System.out.println("\n" + token.getTokenStringValue() + " - " + token.getTokenType().toString());
-				}
-				token = lex.getNextToken();
-			}
+			Lex lex = new Lex(inputFileName);			
+			Parser p = new Parser(lex);
+			p.parseTokens();
 		}
 		catch(LispIntException lie)
 		{
-			out.errorMessage("Exception caught : " + lie.getCustomMessage());
+			out.errorMessage(lie.getCustomMessage());
 			//out.errorMessage("\nDumping stack trace");
 			//lie.printStackTrace();
 			//log.info (e.getMessage());
@@ -110,6 +63,3 @@ class MyInt {
 		lInt.start(args);
     }
 }
-
-    
-    

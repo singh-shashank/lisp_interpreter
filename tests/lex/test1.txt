@@ -19,3 +19,5 @@
 (-4 +6 SUB )) MUL
 
 (--4 ++6 .7 ADD . )) MUL
+
+(QUOTE (A.(B.((C. (D. NIL)).NIL))))

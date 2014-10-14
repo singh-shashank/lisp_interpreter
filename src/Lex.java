@@ -17,7 +17,7 @@ class Lex {
 
     private static String EndOfFile = "#EOF";
 
-	private OutputHandler out;
+	private OutputHandler out = OutputHandler.getInstance();
 	private String inputFile;
     BufferedReader br;
     Queue<Token> tokensQ = new LinkedList<Token>();
@@ -43,7 +43,7 @@ class Lex {
             {
                 // Split at paranthesis
                 String t1 = scanLine.nextToken().toUpperCase();
-                StringTokenizer parts = new StringTokenizer(t1, "\\(|\\)", true);
+                StringTokenizer parts = new StringTokenizer(t1, "(|)", true);
                 while(parts.hasMoreTokens())
                 {
                     //tokensQ.add(scanLine.nextToken().toUpperCase());
@@ -61,9 +61,8 @@ class Lex {
 
     }
 
-    public Lex(String file, OutputHandler o)
+    public Lex(String file)
     {
-    	out = o;
     	inputFile = file;
     }
 
@@ -87,6 +86,23 @@ class Lex {
             token = tokensQ.remove();
         }
         return token;
+    }
+
+    public void addBackUnprocessedToken(Token t)
+    {
+        Queue<Token> temp = new LinkedList<Token>();
+        while(!tokensQ.isEmpty())
+        {
+            temp.add(tokensQ.remove());
+        }
+
+        tokensQ.add(t);
+
+        while(!temp.isEmpty())
+        {
+            tokensQ.add(temp.remove());
+        }
+
     }
 
     private boolean isDigit(char c)

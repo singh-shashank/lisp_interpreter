@@ -13,7 +13,7 @@ JAVAFLAGS = -g -classpath bin
 COMPILE = $(JAVAC) $(JAVAFLAGS)
 
 SOURCE_FILES = src/LispIntException.java src/OutputHandler.java src/Token.java \
-				src/Lex.java src/MyInt.java #$(wildcard src/*.java)
+				src/Lex.java src/Parser.java src/MyInt.java #$(wildcard src/*.java)
 
 
 # One of these should be the "main" class listed in Runfile

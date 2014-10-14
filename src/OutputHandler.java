@@ -4,10 +4,18 @@ class OutputHandler{
 	private String prettyPrint = "";
 
 	public static boolean isContOnError = false;
+	public static boolean isDebug = false;
 
-	public OutputHandler()
+	private static OutputHandler out = new OutputHandler();
+
+	private OutputHandler()
 	{
 
+	}
+
+	public static OutputHandler getInstance()
+	{
+		return out;
 	}
 
 	public void errorMessage(String msg)
@@ -30,16 +38,23 @@ class OutputHandler{
 		else
 		{
 			System.out.println("All is well");
+			System.out.println(prettyPrint);
 		}
 	}
 
 	public void dump(String message)
 	{
-		System.out.println(message);
+		if(isDebug)
+		{
+			System.out.println(message);
+		}
 	}
 
 	public void dumpError(String message)
 	{
-		System.out.println("ERROR: " + message);
+		if(isDebug)
+		{
+			System.out.println("ERROR: " + message);
+		}
 	}
 }
