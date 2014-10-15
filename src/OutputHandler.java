@@ -5,6 +5,7 @@ class OutputHandler{
 
 	public static boolean isContOnError = false;
 	public static boolean isDebug = false;
+	public static boolean isPrintUsingDotNot = false;
 
 	private static OutputHandler out = new OutputHandler();
 
@@ -38,7 +39,7 @@ class OutputHandler{
 		}
 		else
 		{
-			System.out.println("All is well");
+			out.dump("No errors encountered");
 		}
 	}
 

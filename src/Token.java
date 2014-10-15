@@ -4,7 +4,6 @@ class Token
 	{
 		NUMERAL_ATOM,
 		LITERAL_ATOM,
-		NIL_ATOM,
 		DOT,
 		OPEN_PARAN,
 		CLOSE_PARAN,
@@ -48,11 +47,6 @@ class Token
 		checkIfInitialized();
 		return type;
 	}
-
-	public static Token createNilAtom()
-	{
-		return new Token("NIL", TokenType.NIL_ATOM);
-	}
 }
 
 class NumeralAtom extends Token
@@ -88,22 +82,70 @@ class NumeralAtom extends Token
 class LiteralAtom extends Token
 {
 	private String literalValue;
+	private Type type;
+
+	public enum Type
+	{
+		NIL("NIL"),
+		NOT_PRIMIITVE("NOT_PRIMITIVE_TYPE");
+
+		private String value;
+
+		Type(String value)
+		{
+			this.value = value;
+		}
+
+		public String getValue()
+		{
+			return this.value;
+		}
+
+		@Override
+		public String toString()
+		{
+			return this.getValue();
+		}
+	}
 
 	LiteralAtom(String s)
 	{
 		super(s, TokenType.LITERAL_ATOM);
 		literalValue = s;
+		setType();
 	}
 
-	String getValue()
+	private void setType()
+	{
+		if(literalValue.equals(Type.NIL.toString()))
+		{
+			type = Type.NIL;
+		}
+		else
+		{
+			type = Type.NOT_PRIMIITVE;
+		}
+	}
+
+	public String getValue()
 	{
 		return literalValue;
+	}
+
+	public Type getType()
+	{
+		return type;
 	}
 
 	@Override
 	String getTokenStringValue() throws LispIntException
 	{
 		return literalValue.toString();
+	}
+
+	public static LiteralAtom createNilAtom()
+	{
+		return new LiteralAtom("NIL");
 	}
 }
 

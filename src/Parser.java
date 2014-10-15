@@ -2,9 +2,6 @@ import java.util.*;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
-// TODO :
-// 1) take care of extra spaces while printing
-
 class Parser
 {
 	Lex lex;
@@ -273,92 +270,9 @@ class Parser
 		return a;
 	}
 
-	// public SExp parseCompoundSExp(Token token) throws LispIntException, Exception
-	// {
-	// 	out.dump("Processing " + token.getTokenStringValue());
-	// 	if(token.getTokenType() == Token.TokenType.EOF
-	// 		|| symStack.empty())
-	// 	{
-	// 		out.dump("Didn't process : " + token.getTokenStringValue() + " ,so adding it back.");
-	// 		lex.addBackUnprocessedToken(token);
-	// 		return null;
-	// 	}
-
-	// 	//dumpStack(symStack);
-	// 	applyProduction(token);
-	// 	//dumpStack(symStack);
-
-	// 	CSExp compoundExp = new CSExp();
-	// 	SExp left;
-	// 	SExp right;		
-	// 	if(token.getTokenType() == Token.TokenType.OPEN_PARAN)
-	// 	{
-	// 		compoundExp.setTerminalChar1("(");
-	// 		compoundExp.left = parseCompoundSExp(lex.getNextToken());
-	// 		if(lex.peekNextToken().getTokenType() != Token.TokenType.CLOSE_PARAN)
-	// 		{
-	// 			compoundExp.right = parseCompoundSExp(lex.getNextToken());
-	// 		}
-	// 		else
-	// 		{
-	// 			SExp closeParan = parseCompoundSExp(lex.getNextToken());
-	// 		}
-	// 		if(closeParan instanceof CSExp 
-	// 			&& ((CSExp)closeParan).left == null 
-	// 			&& ((CSExp)closeParan).right == null)
-	// 		{
-	// 			out.dump("Processing " + token.getTokenStringValue() + 
-	// 				" and terminal char 2 is " + ((CSExp)closeParan).getTerminalChar2());
-	// 			compoundExp.setTerminalChar2(((CSExp)closeParan).getTerminalChar2());
-	// 		}
-	// 		else
-	// 		{
-	// 			new LispIntException("Parse Error - Expected a ')' parantheses expression." + 
-	// 				"This point shouldn't be reached!!", new Exception());
-	// 		}
-	// 	}
-	// 	else if(token.getTokenType() == Token.TokenType.NUMERAL_ATOM ||
-	// 		token.getTokenType() == Token.TokenType.LITERAL_ATOM)
-	// 	{
-	// 		//return parseTerminalSExp(token);
-	// 		compoundExp.left = parseTerminalSExp(token);
-	// 		//compoundExp.right = parseCompoundSExp(lex.getNextToken());
-	// 		if(lex.peekNextToken().getTokenType() == Token.TokenType.NUMERAL_ATOM ||
-	// 			lex.peekNextToken().getTokenType() == Token.TokenType.LITERAL_ATOM)
-	// 		{
-	// 			System.out.println("Here");
-	// 			compoundExp.right = parseCompoundSExp(lex.getNextToken());
-	// 		}
-	// 		else
-	// 		{
-	// 			compoundExp.right = null;
-	// 		}
-	// 	}
-	// 	else if(token.getTokenType() == Token.TokenType.CLOSE_PARAN)
-	// 	{
-	// 		compoundExp.left = null;
-	// 		compoundExp.right = null;
-	// 		compoundExp.setTerminalChar2(")");
-	// 	}
-	// 	else if(token.getTokenType() == Token.TokenType.DOT)
-	// 	{
-	// 		//compoundExp.left = parseCompoundSExp(lex.getNextToken());
-	// 		compoundExp.left = null;
-	// 		compoundExp.right = parseCompoundSExp(lex.getNextToken());
-	// 		compoundExp.setTerminalChar1(".");
-	// 	}
-	// 	else
-	// 	{
-	// 		throw new LispIntException("Parse Error ", new Exception());
-	// 	}
-	// 	out.dump("Done Processing " + token.getTokenStringValue());
-
-	// 	return compoundExp;
-	// }	
-
 	SExp createSExpForLists() throws LispIntException
 	{
-		SExp exp = new SExp(Token.createNilAtom());
+		SExp exp = new Atom(LiteralAtom.createNilAtom());
 		ArrayList<SExp> temp = new ArrayList<SExp>();
 		while(sExpStack.peek().getToken().getTokenType() 
 			!= Token.TokenType.OPEN_PARAN)
@@ -377,12 +291,20 @@ class Parser
 		{
 			// Start with the 0th element so as to
 			// create a CSExp with NIL.
-			exp = makeDotCSExp(exp, temp.get(0));
+			// exp = makeDotCSExp(exp, temp.get(0));
 
-			for(int i=1; i<temp.size(); ++i)
+			for(int i=0; i<temp.size(); ++i)
 			{
 				exp = makeDotCSExp(exp, temp.get(i));
 			}
+		}
+		else
+		{
+			// Special case handling () or NIL represented as
+			// list i.e. zero element list
+			// Create a CSExp with right being "NIL" atom and
+			// left being NULL
+			exp = makeDotCSExp(exp, null);
 		}
 		return exp;
 	}
@@ -450,23 +372,7 @@ class Parser
 		}
 		else if(token.getTokenType() == Token.TokenType.DOT)
 		{
-			// push '.' here so that we can return back here
-			// in next iteration after checking for "Atom" case
 			sExpStack.push(new SExp(token));
-			// parseCompoundSExp(lex.getNextToken());
-
-			// // Now there should be two valid SExp on top of
-			// // the stack
-			// compoundExp = makeDotCSExp(sExpStack.pop(), sExpStack.pop());
-
-			// // Now again push '.' so that we can safely pop ')' 
-			// // without trying to process SExp list for this case,
-			// // which is a invalid processing.
-			// sExpStack.push(new SExp(token));
-			// parseCompoundSExp(lex.getNextToken());
-
-			// sExpStack.push(compoundExp);
-			// dumpSExpStack();
 		}
 		else
 		{
@@ -578,19 +484,33 @@ class Parser
 
 class SExp
 {
-	Token token;
+	protected Token token;
+	protected boolean isList;
+
 	public SExp()
 	{
 		token = new Token("UNDEFINED", Token.TokenType.UNDEF);
+		isList = false;
 	}
 	public SExp(Token t)
 	{
 		token = t;
+		isList = false;
 	}
 
 	public Token getToken()
 	{
 		return token;
+	}
+
+	public boolean getIsList()
+	{
+		return isList;
+	}
+
+	public void setIsList(boolean isList)
+	{
+		this.isList = isList;
 	}
 
 	public String print() throws LispIntException
@@ -616,7 +536,20 @@ class Atom extends SExp
 	public String print() throws LispIntException
 	{
 		//Parser.out.dump("Calling Atom print for " + token.getTokenStringValue());
-		return token.getTokenStringValue();
+		String ret = token.getTokenStringValue();
+		if(!Parser.out.isPrintUsingDotNot)
+		{
+			if(token instanceof LiteralAtom)
+			{
+				LiteralAtom l = (LiteralAtom)token;
+				if(l.getType() == LiteralAtom.Type.NIL)
+				{
+					ret = "";
+					isList = true;
+				}
+			}
+		}
+		return ret;
 	}
 }
 
@@ -677,22 +610,63 @@ class CSExp extends SExp
 		//Parser.out.dump("Calling CExpPrint with terminal chars " + terminalChar1);
 		//Parser.out.dump(" and " + terminalChar2);
 		String res = "";
-		if(!terminalChar1.isEmpty())
-		{
-				res = terminalChar1;
-		}
+		String leftStr = "";
+		String rightStr = "";
+		
 		if(left != null)
 		{
-			res += left.print();
+			leftStr = left.print();
 		}
-		res += " . ";
 		if(right != null)
 		{
-			res += right.print();
+			rightStr = right.print();
 		}
-		if(!terminalChar2.isEmpty())
+
+		if(!Parser.out.isPrintUsingDotNot && right.isList)
 		{
-			res += terminalChar2;
+			// So we are not forced to print using dot notation
+			// and the right subtree is a list notation.
+			if(!terminalChar1.isEmpty())
+			{
+				res += terminalChar1;
+			}
+			res += leftStr;
+			if(!rightStr.isEmpty())
+			{
+				// Strip of '(' & ')' if we have them on right side
+				if(rightStr.charAt(0) == '(' 
+					&& rightStr.charAt(rightStr.length()-1) == ')')
+				{
+					rightStr = rightStr.substring(1, rightStr.length()-1);
+				}
+				res += " ";
+			}
+			res += rightStr;
+			if(!terminalChar2.isEmpty())
+			{
+				res += terminalChar2;
+			}
+
+			// Important, set the flag here so that this
+			// could be propogated to upper subtrees
+			this.isList = right.isList;
+		}
+		else
+		{
+			// Either debug flag set to print S expressions using
+			// dot notation or this tree node is itself a 
+			// dot s-expression
+			if(!terminalChar1.isEmpty())
+			{
+				res += terminalChar1;
+			}
+			res += leftStr;
+			res += " . ";
+			res += rightStr;
+			if(!terminalChar2.isEmpty())
+			{
+				res += terminalChar2;
+			}
 		}
 		return res;
 	}

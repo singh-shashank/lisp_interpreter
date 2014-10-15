@@ -1,0 +1,8 @@
+42                           
+755 42                       
+(PLUS +2 3)                  
+(PLUS . (+2 . (3 . NIL)) )  
+(PLUS (2 . (3 . NIL)) )      
+(ATOM (QUOTE (2 . 3)))       
+(CONS (PLUS 2 3) (MINUS 5 1))
+(CONS (PLUS 2 3) (MINUS -5 1))

@@ -1,0 +1,22 @@
+(DEFUN F1 (X Y) (CONS X Y))										
+								
+(F1 (PLUS 3 1) 5)												
+											
+(DEFUN F2 (X Y) (CONS (CDR X) (CAR Y)))							
+				
+(F2 (F1 3 2) (CONS 2 3))											
+									
+(DEFUN FIBONACCI (N) 											
+										
+   (COND 
+      ((EQ N 0) 1)
+      ((EQ N 1) 1)
+      (T (PLUS (FIBONACCI (MINUS N 1)) (FIBONACCI (MINUS N 2))))))
+(FIBONACCI 6)													
+												
+(DEFUN NNIL (N) 													
+											
+   (COND 
+      ((EQ N 0) NIL)
+      (T (CONS NIL (NNIL (MINUS N 1))))) )
+(NNIL 5)															

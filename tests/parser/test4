@@ -1,3 +1,0 @@
-(CaR (QuOtE (a . B)))
-(CONS ((4) (QUOTE (A . B))))
-(CONS QUOTE(4) QUOTE (A  B))

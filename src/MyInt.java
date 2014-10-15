@@ -22,6 +22,10 @@ class LispInt
 			{
 				out.isDebug = true;
 			}
+			else if(args[i].equals("-pdot"))
+			{
+				out.isPrintUsingDotNot = true;
+			}
 		}
 	}
 

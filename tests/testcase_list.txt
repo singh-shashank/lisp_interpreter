@@ -1,0 +1,27 @@
+POSITIVE TESTCASES
+
+1> (DEFUN F1 (X Y) (CONS X Y))																					+1
+2> (F1 (PLUS 3 1) 5)																										+1
+3> (DEFUN F2 (X Y) (CONS (CDR X) (CAR Y)))															+1
+4> (F2 (F1 3 2) (CONS 2 3))																							+2
+5> (DEFUN FIBONACCI (N) 																								+1
+      (COND 
+         ((EQ N 0) 1)
+         ((EQ N 1) 1)
+         (T (PLUS (FIBONACCI (MINUS N 1)) (FIBONACCI (MINUS N 2))))))
+6> (FIBONACCI 6)																												+4
+7> (DEFUN NNIL (N) 																											+1
+      (COND 
+         ((EQ N 0) NIL)
+         (T (CONS NIL (NNIL (MINUS N 1))))) )
+8> (NNIL 5)																															+4
+
+
+NEGATIVE TESTCASES 
+
+1> (LESS NIL NIL)																												+1
+2> (CONS (4.5) NIL)																											+1
+3> (COND (NIL 5) (NIL 6))																								+2
+>> (DEFUN BADFOO (X Y) (PLUS X Y))
+4> (BADFOO 3 4 5)																												+1
+5> (BADFOO UNDEF 3)																											+1
