@@ -31,6 +31,7 @@ class OutputHandler{
 
 	public void dump()
 	{
+		System.out.println(prettyPrint);
 		if(error)
 		{
 			System.out.println("ERROR: " + errorMsg);
@@ -38,7 +39,6 @@ class OutputHandler{
 		else
 		{
 			System.out.println("All is well");
-			System.out.println(prettyPrint);
 		}
 	}
 

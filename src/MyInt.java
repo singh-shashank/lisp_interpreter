@@ -18,7 +18,7 @@ class LispInt
 			{
 				out.isContOnError = true;
 			}
-			else if(args[i].equals("-bdtg"))
+			else if(args[i].equals("-dbg"))
 			{
 				out.isDebug = true;
 			}

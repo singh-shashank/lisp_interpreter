@@ -4,11 +4,13 @@ class Token
 	{
 		NUMERAL_ATOM,
 		LITERAL_ATOM,
+		NIL_ATOM,
 		DOT,
 		OPEN_PARAN,
 		CLOSE_PARAN,
 		ERROR,
-		EOF
+		EOF,
+		UNDEF
 	}
 
 	protected TokenType type;
@@ -46,6 +48,11 @@ class Token
 		checkIfInitialized();
 		return type;
 	}
+
+	public static Token createNilAtom()
+	{
+		return new Token("NIL", TokenType.NIL_ATOM);
+	}
 }
 
 class NumeralAtom extends Token
@@ -70,6 +77,12 @@ class NumeralAtom extends Token
 	{
 		return value;
 	}
+
+	@Override
+	String getTokenStringValue() throws LispIntException
+	{
+		return value.toString();
+	}
 }
 
 class LiteralAtom extends Token
@@ -85,6 +98,12 @@ class LiteralAtom extends Token
 	String getValue()
 	{
 		return literalValue;
+	}
+
+	@Override
+	String getTokenStringValue() throws LispIntException
+	{
+		return literalValue.toString();
 	}
 }
 

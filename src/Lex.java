@@ -88,8 +88,23 @@ class Lex {
         return token;
     }
 
-    public void addBackUnprocessedToken(Token t)
+    public Token peekNextToken() throws Exception
     {
+        if(tokensQ.isEmpty())
+        {
+            // Read next set of tokens from the file
+            while(tokensQ.isEmpty())
+            {
+                readNextSetOfToken();
+            }
+        }
+        return tokensQ.peek();
+    }
+
+    public void addBackUnprocessedToken(Token t) throws LispIntException
+    {
+        if(t.getTokenType() == Token.TokenType.EOF)
+            return;
         Queue<Token> temp = new LinkedList<Token>();
         while(!tokensQ.isEmpty())
         {
@@ -124,6 +139,7 @@ class Lex {
 
     void convertToToken(String value) throws LispIntException
     {
+        //System.out.println("convertToToken" + value);
         Token result = new Token();
 
         if(value.equals("."))
@@ -190,7 +206,6 @@ class Lex {
             handleErrorToken(value, "Huh? An empty string token encountered! This shouldn't have happened!!");
             return;
         }
-
         tokensQ.add(result);
     }
 

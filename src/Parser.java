@@ -12,6 +12,7 @@ class Parser
 	private ArrayList<Production> prodList = new ArrayList<Production>();
 	private int[][] parseTable = new int[Symbol.NT_END.ordinal()][Symbol.T_END.ordinal()-Symbol.NT_END.ordinal()];
 	Stack<Symbol> symStack = new Stack<Symbol>();
+	Stack<SExp> sExpStack = new Stack<SExp>();
 
 	public Parser(Lex l)
 	{
@@ -208,6 +209,7 @@ class Parser
 
 			if(!symStack.empty())
 			{
+				out.errorMessage("Expression parsed till now... : \n" + exp.print() + "\n");
 				if(isTerminalSymbol(symStack.peek()))
 				{
 					throw new LispIntException("Parse Error - Missing a token ? " + symStack.pop() + "?..."
@@ -228,7 +230,8 @@ class Parser
 			}
 
 			out.dump("Printing expression ");
-			out.prettyPrint(exp.print());
+			//out.prettyPrint(exp.print());
+			out.prettyPrint(sExpStack.pop().print());
 			out.prettyPrint("\n");
 		}
 	}
@@ -240,6 +243,18 @@ class Parser
 		while(iter.hasNext())
 		{
 			out.dump(iter.next().toString());
+		}
+		out.dump("-----------End of dump--------- \n");
+	}
+
+	private void dumpSExpStack() throws LispIntException
+	{
+		Iterator<SExp> iter = sExpStack.iterator();
+		out.dump("----------Dumping SExp stack----------- \n");
+		while(iter.hasNext())
+		{
+			out.dump(iter.next().print());
+			//out.dump("\n");
 		}
 		out.dump("-----------End of dump--------- \n");
 	}
@@ -258,6 +273,130 @@ class Parser
 		return a;
 	}
 
+	// public SExp parseCompoundSExp(Token token) throws LispIntException, Exception
+	// {
+	// 	out.dump("Processing " + token.getTokenStringValue());
+	// 	if(token.getTokenType() == Token.TokenType.EOF
+	// 		|| symStack.empty())
+	// 	{
+	// 		out.dump("Didn't process : " + token.getTokenStringValue() + " ,so adding it back.");
+	// 		lex.addBackUnprocessedToken(token);
+	// 		return null;
+	// 	}
+
+	// 	//dumpStack(symStack);
+	// 	applyProduction(token);
+	// 	//dumpStack(symStack);
+
+	// 	CSExp compoundExp = new CSExp();
+	// 	SExp left;
+	// 	SExp right;		
+	// 	if(token.getTokenType() == Token.TokenType.OPEN_PARAN)
+	// 	{
+	// 		compoundExp.setTerminalChar1("(");
+	// 		compoundExp.left = parseCompoundSExp(lex.getNextToken());
+	// 		if(lex.peekNextToken().getTokenType() != Token.TokenType.CLOSE_PARAN)
+	// 		{
+	// 			compoundExp.right = parseCompoundSExp(lex.getNextToken());
+	// 		}
+	// 		else
+	// 		{
+	// 			SExp closeParan = parseCompoundSExp(lex.getNextToken());
+	// 		}
+	// 		if(closeParan instanceof CSExp 
+	// 			&& ((CSExp)closeParan).left == null 
+	// 			&& ((CSExp)closeParan).right == null)
+	// 		{
+	// 			out.dump("Processing " + token.getTokenStringValue() + 
+	// 				" and terminal char 2 is " + ((CSExp)closeParan).getTerminalChar2());
+	// 			compoundExp.setTerminalChar2(((CSExp)closeParan).getTerminalChar2());
+	// 		}
+	// 		else
+	// 		{
+	// 			new LispIntException("Parse Error - Expected a ')' parantheses expression." + 
+	// 				"This point shouldn't be reached!!", new Exception());
+	// 		}
+	// 	}
+	// 	else if(token.getTokenType() == Token.TokenType.NUMERAL_ATOM ||
+	// 		token.getTokenType() == Token.TokenType.LITERAL_ATOM)
+	// 	{
+	// 		//return parseTerminalSExp(token);
+	// 		compoundExp.left = parseTerminalSExp(token);
+	// 		//compoundExp.right = parseCompoundSExp(lex.getNextToken());
+	// 		if(lex.peekNextToken().getTokenType() == Token.TokenType.NUMERAL_ATOM ||
+	// 			lex.peekNextToken().getTokenType() == Token.TokenType.LITERAL_ATOM)
+	// 		{
+	// 			System.out.println("Here");
+	// 			compoundExp.right = parseCompoundSExp(lex.getNextToken());
+	// 		}
+	// 		else
+	// 		{
+	// 			compoundExp.right = null;
+	// 		}
+	// 	}
+	// 	else if(token.getTokenType() == Token.TokenType.CLOSE_PARAN)
+	// 	{
+	// 		compoundExp.left = null;
+	// 		compoundExp.right = null;
+	// 		compoundExp.setTerminalChar2(")");
+	// 	}
+	// 	else if(token.getTokenType() == Token.TokenType.DOT)
+	// 	{
+	// 		//compoundExp.left = parseCompoundSExp(lex.getNextToken());
+	// 		compoundExp.left = null;
+	// 		compoundExp.right = parseCompoundSExp(lex.getNextToken());
+	// 		compoundExp.setTerminalChar1(".");
+	// 	}
+	// 	else
+	// 	{
+	// 		throw new LispIntException("Parse Error ", new Exception());
+	// 	}
+	// 	out.dump("Done Processing " + token.getTokenStringValue());
+
+	// 	return compoundExp;
+	// }	
+
+	SExp createSExpForLists() throws LispIntException
+	{
+		SExp exp = new SExp(Token.createNilAtom());
+		ArrayList<SExp> temp = new ArrayList<SExp>();
+		while(sExpStack.peek().getToken().getTokenType() 
+			!= Token.TokenType.OPEN_PARAN)
+		{
+			temp.add(sExpStack.pop());
+		}
+		
+		// pop the open paran now
+		sExpStack.pop();
+		out.dump("In exp for lists");
+		dumpSExpStack();
+
+		// check if we have more than one s-exp in temp
+		// if yes, we have lists to handle
+		if(temp.size() >= 1)
+		{
+			// Start with the 0th element so as to
+			// create a CSExp with NIL.
+			exp = makeDotCSExp(exp, temp.get(0));
+
+			for(int i=1; i<temp.size(); ++i)
+			{
+				exp = makeDotCSExp(exp, temp.get(i));
+			}
+		}
+		return exp;
+	}
+
+	CSExp makeDotCSExp(SExp right, SExp left) throws LispIntException
+	{
+		CSExp compoundExp = new CSExp();
+		compoundExp.right = right;
+		compoundExp.left = left;
+		compoundExp.setTerminalChar1("(");
+		compoundExp.setTerminalChar2(")");
+		return compoundExp;
+	}
+
 	public SExp parseCompoundSExp(Token token) throws LispIntException, Exception
 	{
 		out.dump("Processing " + token.getTokenStringValue());
@@ -269,37 +408,65 @@ class Parser
 			return null;
 		}
 
-		dumpStack(symStack);
 		applyProduction(token);
-		dumpStack(symStack);
-
+		
 		CSExp compoundExp = new CSExp();
-		SExp left;
-		SExp right;		
 		if(token.getTokenType() == Token.TokenType.OPEN_PARAN)
 		{
-			compoundExp.left = parseCompoundSExp(lex.getNextToken());
-			compoundExp.right = parseCompoundSExp(lex.getNextToken());
-			compoundExp.setTerminalChar("(");
+			sExpStack.push(new SExp(token));
 		}
 		else if(token.getTokenType() == Token.TokenType.NUMERAL_ATOM ||
 			token.getTokenType() == Token.TokenType.LITERAL_ATOM)
 		{
-			//return parseTerminalSExp(token);
-			compoundExp.left = parseTerminalSExp(token);
-			compoundExp.right = parseCompoundSExp(lex.getNextToken());
+			sExpStack.push(parseTerminalSExp(token));
 		}
 		else if(token.getTokenType() == Token.TokenType.CLOSE_PARAN)
 		{
-			compoundExp.left = null;
-			compoundExp.right = null;
-			compoundExp.setTerminalChar(")");
+			// First check if we have a DOT expression to parse
+			// To check this we need to check the second value on stack
+			// We are guaranteed that we will have atleast one '('
+			// on stack
+			SExp exp = new SExp();
+			out.dump("Stack before processing ')'");
+			dumpSExpStack();
+			SExp top = sExpStack.pop();
+			if(!sExpStack.empty()
+				&& sExpStack.peek().getToken().getTokenType() == Token.TokenType.DOT)
+			{
+				// Process the DOT expression here
+				sExpStack.pop(); // pop '.'
+				SExp left = sExpStack.pop(); //get the left hand SExp
+				exp = makeDotCSExp(top, left);
+				sExpStack.pop(); // pop '('
+			}
+			else
+			{
+				sExpStack.push(top);
+				exp = createSExpForLists();
+			}
+			sExpStack.push(exp);
+			out.dump("Stack after processing ')'");
+			dumpSExpStack();
 		}
 		else if(token.getTokenType() == Token.TokenType.DOT)
 		{
-			compoundExp.left = parseCompoundSExp(lex.getNextToken());
-			compoundExp.right = parseCompoundSExp(lex.getNextToken());
-			compoundExp.setTerminalChar(".");
+			// push '.' here so that we can return back here
+			// in next iteration after checking for "Atom" case
+			sExpStack.push(new SExp(token));
+			// parseCompoundSExp(lex.getNextToken());
+
+			// // Now there should be two valid SExp on top of
+			// // the stack
+			// compoundExp = makeDotCSExp(sExpStack.pop(), sExpStack.pop());
+
+			// // Now again push '.' so that we can safely pop ')' 
+			// // without trying to process SExp list for this case,
+			// // which is a invalid processing.
+			// sExpStack.push(new SExp(token));
+			// parseCompoundSExp(lex.getNextToken());
+
+			// sExpStack.push(compoundExp);
+			// dumpSExpStack();
 		}
 		else
 		{
@@ -307,15 +474,18 @@ class Parser
 		}
 		out.dump("Done Processing " + token.getTokenStringValue());
 
+		dumpSExpStack();
+		parseCompoundSExp(lex.getNextToken());
+
 		return compoundExp;
-	}	
+	}
 
 	// TODO : check for empty stack
 	private void applyProduction(Token t) throws LispIntException, Exception
 	{
 		boolean nonTerminalOnTop = true;
-		//out.dump("In apply production for token : " + t.getTokenStringValue());
-		//out.dump("On top of stack : " + symStack.peek());
+		out.dump("BEGIN : In apply production for token : " + t.getTokenStringValue());
+		out.dump("On top of stack : " + symStack.peek());
 		while(nonTerminalOnTop)
 		{
 			if(isTerminalSymbol(symStack.peek()))
@@ -358,8 +528,9 @@ class Parser
 				}
 
 			}
-			//dumpStack(symStack);
+			dumpStack(symStack);
 		}
+		out.dump("END : In apply production for token : " + t.getTokenStringValue());
 	}
 
 	private Symbol getSymbolTypeForTokenType(Token.TokenType type)
@@ -410,7 +581,7 @@ class SExp
 	Token token;
 	public SExp()
 	{
-
+		token = new Token("UNDEFINED", Token.TokenType.UNDEF);
 	}
 	public SExp(Token t)
 	{
@@ -424,7 +595,7 @@ class SExp
 
 	public String print() throws LispIntException
 	{
-		Parser.out.dump("Calling SExp print");
+		//Parser.out.dump("Calling SExp print");
 		return token.getTokenStringValue();
 	}
 }
@@ -444,8 +615,8 @@ class Atom extends SExp
 	@Override
 	public String print() throws LispIntException
 	{
-		Parser.out.dump("Calling Atom print for " + token.getTokenStringValue());
-		return token.getTokenStringValue() + " ";
+		//Parser.out.dump("Calling Atom print for " + token.getTokenStringValue());
+		return token.getTokenStringValue();
 	}
 }
 
@@ -453,18 +624,22 @@ class CSExp extends SExp
 {
 	public SExp left;
 	public SExp right;
-	private String terminalChar;
+	private String terminalChar1;
+	private String terminalChar2;
 
 	public CSExp()
 	{
-		terminalChar = "";
+		terminalChar1 = "";
+		terminalChar2 = "";
 	}
 	public CSExp(SExp l, SExp r)
 	{
 		left = l;
 		right = r;
-		terminalChar = "";
+		terminalChar1 = "";
+		terminalChar2 = "";
 	}
+
 
 	public SExp getLeftSExp()
 	{
@@ -476,35 +651,48 @@ class CSExp extends SExp
 		return right;
 	}
 
-	public void setTerminalChar(String s)
+	public void setTerminalChar1(String s)
 	{
-		terminalChar = s;
+		terminalChar1 = s;
 	}	
 
-	public String getTerminalChar()
+	public String getTerminalChar1()
 	{
-		return terminalChar;
+		return terminalChar1;
+	}
+
+	public void setTerminalChar2(String s)
+	{
+		terminalChar2 = s;
+	}	
+
+	public String getTerminalChar2()
+	{
+		return terminalChar2;
 	}
 
 	@Override
 	public String print() throws LispIntException
 	{
-		Parser.out.dump("Calling CExpPrint with terminal char " + terminalChar);
+		//Parser.out.dump("Calling CExpPrint with terminal chars " + terminalChar1);
+		//Parser.out.dump(" and " + terminalChar2);
 		String res = "";
-		if(!terminalChar.isEmpty())
+		if(!terminalChar1.isEmpty())
 		{
-			if(terminalChar.equals("."))
-				res = terminalChar + " ";
-			else
-				res = terminalChar;
+				res = terminalChar1;
 		}
 		if(left != null)
 		{
 			res += left.print();
 		}
+		res += " . ";
 		if(right != null)
 		{
 			res += right.print();
+		}
+		if(!terminalChar2.isEmpty())
+		{
+			res += terminalChar2;
 		}
 		return res;
 	}
