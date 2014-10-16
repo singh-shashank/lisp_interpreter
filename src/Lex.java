@@ -18,7 +18,7 @@ class Lex {
     private static String EndOfFile = "#EOF";
 
 	private OutputHandler out = OutputHandler.getInstance();
-	private String inputFile;
+	private String inputFile = "";
     BufferedReader br;
     Queue<Token> tokensQ = new LinkedList<Token>();
     
@@ -60,6 +60,8 @@ class Lex {
         }
 
     }
+
+    public Lex(){}
 
     public Lex(String file)
     {

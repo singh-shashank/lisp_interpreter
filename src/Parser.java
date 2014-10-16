@@ -19,19 +19,19 @@ class Parser
 
 	enum Symbol
 	{
-		NT_S("<S>"),
-		NT_E("<E>"),
-		NT_X("<X>"),
-		NT_Y("<Y>"),
-		NT_R("<R>"),
-		NT_END("End Marker"),
-		T_ATOM("ATOM"),
-		T_OPEN_PARAN("("),
-		T_CLOSE_PARAN(")"),
-		T_DOT("."),
-		T_EOF("#EOF"),
-		T_END("End Marker"),
-		UNDEF("Undefined Symbol");
+		NT_S("'<S>'"),
+		NT_E("'<E>'"),
+		NT_X("'<X>'"),
+		NT_Y("'<Y>'"),
+		NT_R("'<R>'"),
+		NT_END("'End Marker'"),
+		T_ATOM("'ATOM'"),
+		T_OPEN_PARAN("'('"),
+		T_CLOSE_PARAN("')'"),
+		T_DOT("'.'"),
+		T_EOF("'#EOF'"),
+		T_END("'End Marker'"),
+		UNDEF("'Undefined Symbol'");
 
 		private String value;
 

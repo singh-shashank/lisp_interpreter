@@ -1,4 +1,5 @@
 class OutputHandler{
+	
 	private boolean error = false;
 	private String errorMsg = "";
 	private String prettyPrint = "";

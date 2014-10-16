@@ -6,9 +6,6 @@ import java.util.logging.Logger;
 class LispInt
 {
 	OutputHandler out = OutputHandler.getInstance();
-	Logger log = Logger.getLogger(LispInt.class.getName());
-	String inputFileName = "";
-	String outputFileName = "";
 
 	private void parseArgs(String[] args) throws Exception
 	{
@@ -35,23 +32,29 @@ class LispInt
 		try
 		{
 			parseArgs(args);
-			Lex lex = new Lex(inputFileName);			
+			Lex lex = new Lex();			
 			Parser p = new Parser(lex);
 			p.parseTokens();
 		}
 		catch(LispIntException lie)
 		{
 			out.errorMessage(lie.getCustomMessage());
-			//out.errorMessage("\nDumping stack trace");
-			//lie.printStackTrace();
-			//log.info (e.getMessage());
+			if(out.isDebug)
+			{
+				out.errorMessage("---------------------------------");
+				out.errorMessage("\nDumping stack trace");
+				lie.printStackTrace();
+			}
 		}
 		catch(Exception e)
 		{
 			out.errorMessage("\nException Caught - " + e.getMessage());
-			//out.errorMessage("\nDumping stack trace");
-			e.printStackTrace();
-			//log.info (e.getMessage());
+			if(out.isDebug)
+			{
+				out.errorMessage("---------------------------------");
+				out.errorMessage("\nDumping stack trace");
+				e.printStackTrace();
+			}
 		}
 		finally
 		{
