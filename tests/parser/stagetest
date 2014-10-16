@@ -1,1 +1,1 @@
-(PLUS (2 . (3 . NIL)) ) 
+(CONS (PLUS 2 3  (MINUS 5 1))

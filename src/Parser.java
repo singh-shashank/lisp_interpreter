@@ -19,18 +19,18 @@ class Parser
 
 	enum Symbol
 	{
-		NT_S("Non Terminal : <S>"),
-		NT_E("Non Terminal : <E>"),
-		NT_X("Non Terminal : <X>"),
-		NT_Y("Non Terminal : <Y>"),
-		NT_R("Non Terminal : <R>"),
-		NT_END("Non Terminal : End Marker"),
-		T_ATOM("Terminal : ATOM"),
-		T_OPEN_PARAN("Terminal : ("),
-		T_CLOSE_PARAN("Terminal : )"),
-		T_DOT("Terminal : ."),
-		T_EOF("Terminal : #EOF"),
-		T_END("Terminal : End Marker"),
+		NT_S("<S>"),
+		NT_E("<E>"),
+		NT_X("<X>"),
+		NT_Y("<Y>"),
+		NT_R("<R>"),
+		NT_END("End Marker"),
+		T_ATOM("ATOM"),
+		T_OPEN_PARAN("("),
+		T_CLOSE_PARAN(")"),
+		T_DOT("."),
+		T_EOF("#EOF"),
+		T_END("End Marker"),
 		UNDEF("Undefined Symbol");
 
 		private String value;
@@ -188,28 +188,16 @@ class Parser
 		while(token.getTokenType() !=  Token.TokenType.EOF)
 		{
 			SExp exp = new SExp();
-			//symStack.push(Symbol.T_EOF);
 			out.dump("----------------- Starting new expression-------------- ");
 			symStack.push(Symbol.NT_S);
-			exp = parseCompoundSExp(token);
-			// if(token.getTokenType() == Token.TokenType.OPEN_PARAN)
-			// {
-				
-			// 	exp = parseCompoundSExp(token);
-			// }
-			// else if(token.getTokenType() == Token.TokenType.NUMERAL_ATOM ||
-			// 	token.getTokenType() == Token.TokenType.LITERAL_ATOM)
-			// {
-			// 	exp = parseTerminalSExp(token);
-			// }			
-			token = lex.getNextToken();
-
+			parseCompoundSExp(token);			
+			exp = sExpStack.pop();
 			if(!symStack.empty())
 			{
-				out.errorMessage("Expression parsed till now... : \n" + exp.print() + "\n");
+				out.errorMessage("Parse Error - Expression parsed till now... : \n" + exp.print() + "\n");
 				if(isTerminalSymbol(symStack.peek()))
 				{
-					throw new LispIntException("Parse Error - Missing a token ? " + symStack.pop() + "?..."
+					throw new LispIntException("Missing a token ? Maybe " + symStack.pop() + "?..."
 						, new Exception());
 				}
 				else
@@ -221,15 +209,15 @@ class Parser
 						if(parseTable[nt_index][j] != -1)
 						msg += Symbol.values()[Symbol.NT_END.ordinal() + j + 1] + " ";
 					}
-					throw new LispIntException("Parse Error - Missing a token ? " + msg
+					throw new LispIntException("Missing a token ? " + msg
 						, new Exception());
 				}
 			}
 
 			out.dump("Printing expression ");
-			//out.prettyPrint(exp.print());
-			out.prettyPrint(sExpStack.pop().print());
+			out.prettyPrint(exp.print());
 			out.prettyPrint("\n");
+			token = lex.getNextToken();
 		}
 	}
 
@@ -251,7 +239,6 @@ class Parser
 		while(iter.hasNext())
 		{
 			out.dump(iter.next().print());
-			//out.dump("\n");
 		}
 		out.dump("-----------End of dump--------- \n");
 	}
@@ -319,7 +306,7 @@ class Parser
 		return compoundExp;
 	}
 
-	public SExp parseCompoundSExp(Token token) throws LispIntException, Exception
+	public void parseCompoundSExp(Token token) throws LispIntException, Exception
 	{
 		out.dump("Processing " + token.getTokenStringValue());
 		if(token.getTokenType() == Token.TokenType.EOF
@@ -327,12 +314,11 @@ class Parser
 		{
 			out.dump("Didn't process : " + token.getTokenStringValue() + " ,so adding it back.");
 			lex.addBackUnprocessedToken(token);
-			return null;
+			return;
 		}
 
 		applyProduction(token);
-		
-		CSExp compoundExp = new CSExp();
+
 		if(token.getTokenType() == Token.TokenType.OPEN_PARAN)
 		{
 			sExpStack.push(new SExp(token));
@@ -382,8 +368,6 @@ class Parser
 
 		dumpSExpStack();
 		parseCompoundSExp(lex.getNextToken());
-
-		return compoundExp;
 	}
 
 	// TODO : check for empty stack
