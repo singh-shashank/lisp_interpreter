@@ -1,5 +1,5 @@
 class OutputHandler{
-	
+
 	private boolean error = false;
 	private String errorMsg = "";
 	private String prettyPrint = "";
@@ -28,7 +28,14 @@ class OutputHandler{
 
 	public void prettyPrint(String msg)
 	{
-		prettyPrint += msg;
+		if(prettyPrint.isEmpty())
+		{
+			prettyPrint = msg;
+		}
+		else
+		{
+			prettyPrint += "\n" + msg;
+		}
 	}
 
 	public void dump()

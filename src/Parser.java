@@ -215,8 +215,7 @@ class Parser
 			}
 
 			out.dump("Printing expression ");
-			out.prettyPrint(exp.print());
-			out.prettyPrint("\n");
+			out.prettyPrint(exp.print());			
 			token = lex.getNextToken();
 		}
 	}
@@ -291,7 +290,10 @@ class Parser
 			// list i.e. zero element list
 			// Create a CSExp with right being "NIL" atom and
 			// left being NULL
-			exp = makeDotCSExp(exp, null);
+			exp = makeDotCSExp(null, exp);
+			CSExp cexp = (CSExp)exp;
+			cexp.setTerminalChar1("");
+			cexp.setTerminalChar2("");
 		}
 		return exp;
 	}
@@ -516,6 +518,20 @@ class Atom extends SExp
 		super(t);
 	}
 
+	public boolean isNilAtom()
+	{
+		boolean ret = false;
+		if(token instanceof LiteralAtom)
+			{
+				LiteralAtom l = (LiteralAtom)token;
+				if(l.getType() == LiteralAtom.Type.NIL)
+				{
+					ret = true;
+				}
+			}
+		return ret;
+	}
+
 	@Override
 	public String print() throws LispIntException
 	{
@@ -528,7 +544,6 @@ class Atom extends SExp
 				LiteralAtom l = (LiteralAtom)token;
 				if(l.getType() == LiteralAtom.Type.NIL)
 				{
-					ret = "";
 					isList = true;
 				}
 			}
@@ -604,12 +619,23 @@ class CSExp extends SExp
 		if(right != null)
 		{
 			rightStr = right.print();
+			if(right instanceof Atom)
+			{
+				if(((Atom)right).isNilAtom() && !Parser.out.isPrintUsingDotNot)
+				{
+					rightStr = "";
+				}
+			}
 		}
 
-		if(!Parser.out.isPrintUsingDotNot && right.isList)
+		if(!Parser.out.isPrintUsingDotNot && right != null && right.isList)
 		{
 			// So we are not forced to print using dot notation
 			// and the right subtree is a list notation.
+
+			// if we have NIL atom on right, then we need to empty
+			// the string here.
+
 			if(!terminalChar1.isEmpty())
 			{
 				res += terminalChar1;
@@ -645,8 +671,15 @@ class CSExp extends SExp
 				res += terminalChar1;
 			}
 			res += leftStr;
-			res += " . ";
-			res += rightStr;
+			if(!rightStr.isEmpty())
+			{
+				res += " . ";
+				res += rightStr;
+			}
+			else
+			{
+				// print nothing in this case
+			}
 			if(!terminalChar2.isEmpty())
 			{
 				res += terminalChar2;

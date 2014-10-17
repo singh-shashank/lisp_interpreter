@@ -1,7 +1,5 @@
 import java.lang.Object;
 import java.io.Reader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 class LispInt
 {
