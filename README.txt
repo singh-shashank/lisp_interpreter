@@ -34,6 +34,8 @@ Following are few flags that supported by the interpreter:
 
 -cont -> is a flag for continuing on errors (not fully supported in this version yet)
 
+NOTE: This interpreter doesn't yet support an interactive mode where an expression is entered at press of the return key. I am planning to do that for the final submission, but for this submission, you can enter the input at the console but for marking the end of the input, please type in "#EOF" after which the complete input program will be evaluated
+
 
 3. Design
 -----------
