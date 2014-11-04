@@ -40,6 +40,14 @@ class OutputHandler{
 
 	public void dump()
 	{
+		if(isDebug)
+		{
+			System.out.println();
+			System.out.println("Results below :");
+			System.out.println("--------------------------");
+			System.out.println();
+		}
+
 		System.out.println(prettyPrint);
 		if(error)
 		{
@@ -47,7 +55,7 @@ class OutputHandler{
 		}
 		else
 		{
-			out.dump("No errors encountered");
+			out.dump("\nNo errors encountered");
 		}
 	}
 

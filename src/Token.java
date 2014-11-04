@@ -87,6 +87,7 @@ class LiteralAtom extends Token
 	public enum Type
 	{
 		NIL("NIL"),
+		TRUE("T"),
 		NOT_PRIMIITVE("NOT_PRIMITIVE_TYPE");
 
 		private String value;
@@ -120,6 +121,10 @@ class LiteralAtom extends Token
 		if(literalValue.equals(Type.NIL.toString()))
 		{
 			type = Type.NIL;
+		}
+		else if(literalValue.equals(Type.TRUE.toString()))
+		{
+			type = Type.TRUE;
 		}
 		else
 		{
