@@ -30,11 +30,51 @@ class SExp
 		this.isList = isList;
 	}
 
+	public boolean isNilAtom()
+	{
+		boolean ret = false;
+		if(isAtom() && token instanceof LiteralAtom)
+			{
+				LiteralAtom l = (LiteralAtom)token;
+				if(l.getType() == LiteralAtom.Type.NIL)
+				{
+					ret = true;
+				}
+			}
+		return ret;
+	}
+
+	public boolean isTrueAtom()
+	{
+		boolean ret = false;
+		if(isAtom() && token instanceof LiteralAtom)
+			{
+				LiteralAtom l = (LiteralAtom)token;
+				if(l.getType() == LiteralAtom.Type.TRUE)
+				{
+					ret = true;
+				}
+			}
+		return ret;
+	}
+
+	public boolean isNumeralAtom()
+	{
+		return ( this instanceof Atom && 
+					this.token instanceof NumeralAtom);
+	}
+
+	public boolean isAtom()
+	{
+		return (this instanceof Atom);
+	}
+
 	public String print() throws LispIntException
 	{
 		//Parser.out.dump("Calling SExp print");
 		return token.getTokenStringValue();
 	}
+
 }
 
 class Atom extends SExp
@@ -49,32 +89,29 @@ class Atom extends SExp
 		super(t);
 	}
 
-	public boolean isNilAtom()
+	public boolean eq(Atom a) throws LispIntException
 	{
-		boolean ret = false;
-		if(token instanceof LiteralAtom)
-			{
-				LiteralAtom l = (LiteralAtom)token;
-				if(l.getType() == LiteralAtom.Type.NIL)
-				{
-					ret = true;
-				}
-			}
-		return ret;
-	}
+		boolean retVal = false;
+		if(this.getToken() instanceof LiteralAtom
+			&& a.getToken() instanceof LiteralAtom)
+		{
+			retVal = (this.print().equals(
+				a.print()));
+		}
+		else if(this.getToken() instanceof NumeralAtom
+			&& a.getToken() instanceof NumeralAtom)
+		{
+			retVal = (((NumeralAtom)this.getToken()).getValue() == 
+						((NumeralAtom)a.getToken()).getValue());
 
-	public boolean isTrueAtom()
-	{
-		boolean ret = false;
-		if(token instanceof LiteralAtom)
-			{
-				LiteralAtom l = (LiteralAtom)token;
-				if(l.getType() == LiteralAtom.Type.TRUE)
-				{
-					ret = true;
-				}
-			}
-		return ret;
+		}
+		else
+		{
+			throw new LispIntException("eq() method; shouldn't have reached here!",
+				new Exception());
+		}
+
+		return retVal;
 	}
 
 	@Override

@@ -1,23 +1,26 @@
+import java.util.*;
+
 class EvalSExp
 {
 	public static OutputHandler out = OutputHandler.getInstance();
-	public static SExp eval(SExp exp) throws LispIntException
+	public static SExp eval(SExp exp,
+		HashMap<String, Stack<Token>> a, 
+		HashMap<String, String> d) throws LispIntException // TODO : fix this
 	{
 		// exp is an atom
 		SExp retVal = new SExp();
-		if(exp instanceof Atom)
+		if(exp.isAtom())
 		{
 			out.dump("SExp for eval is atom");
-			Atom a = (Atom)exp;
-			if(a.isNilAtom())
+			if(exp.isTrueAtom())
 			{
-				retVal = exp;
+				retVal = new Atom(LiteralAtom.createTrueAtom());
 			}
-			else if(a.isTrueAtom())
+			else if(exp.isNilAtom())
 			{
-				retVal = exp;
+				retVal = new Atom(LiteralAtom.createNilAtom());
 			}
-			else if(a.getToken() instanceof NumeralAtom)
+			else if(exp.isNumeralAtom())
 			{
 				retVal = exp;
 			}
@@ -30,7 +33,7 @@ class EvalSExp
 		// its a list
 		else if(exp instanceof CSExp)
 		{
-			retVal = evalCdr(exp);
+			
 		}
 		else
 		{
@@ -64,5 +67,55 @@ class EvalSExp
 		}
 
 		return ((CSExp)exp).right;
+	}
+
+	public static SExp evalNULL(SExp exp) throws LispIntException
+	{
+		SExp retVal;
+		if(exp.isNilAtom())
+		{
+			retVal = new SExp(LiteralAtom.createTrueAtom());
+		}
+		else
+		{
+			retVal = new SExp(LiteralAtom.createNilAtom());
+		}
+		return retVal;
+	}
+
+	public static SExp evalINT(SExp exp) throws LispIntException
+	{
+		SExp retVal;
+		if(exp.isNumeralAtom())
+		{
+			retVal = new SExp(LiteralAtom.createTrueAtom());
+		}
+		else
+		{
+			retVal = new SExp(LiteralAtom.createNilAtom());
+		}
+		return retVal;
+	}
+
+	public static SExp evalEQ(SExp exp1, SExp exp2) throws LispIntException
+	{
+		SExp retVal;
+		if(!(exp1.isAtom() && exp2.isAtom()))
+		{
+			String msg = "EQ expects pair of atoms but was passed these: ";
+			msg +=  exp1.print() + " , " + exp2.print() + "...";
+			retVal = new SExp(ErrorAtom.createErrorAtom(msg));
+			throw new LispIntException(msg, new Exception());
+		}
+
+		if(((Atom)exp1).eq((Atom)exp2))
+		{
+			retVal = new SExp(LiteralAtom.createTrueAtom());
+		}
+		else
+		{
+			retVal = new SExp(LiteralAtom.createNilAtom());
+		}
+		return retVal;
 	}
 }

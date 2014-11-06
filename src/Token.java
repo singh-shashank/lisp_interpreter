@@ -69,7 +69,7 @@ class NumeralAtom extends Token
 
 	int getValue()
 	{
-		return value;
+		return value.intValue();
 	}
 
 	@Override
@@ -88,6 +88,8 @@ class LiteralAtom extends Token
 	{
 		NIL("NIL"),
 		TRUE("T"),
+		QUOTE("QUOTE"),
+		COND("COND"),
 		NOT_PRIMIITVE("NOT_PRIMITIVE_TYPE");
 
 		private String value;
@@ -116,6 +118,13 @@ class LiteralAtom extends Token
 		setType();
 	}
 
+	LiteralAtom(Type t)
+	{
+		super(t.getValue(), TokenType.LITERAL_ATOM);
+		literalValue = t.getValue();
+		type = t;
+	}
+
 	private void setType()
 	{
 		if(literalValue.equals(Type.NIL.toString()))
@@ -123,6 +132,14 @@ class LiteralAtom extends Token
 			type = Type.NIL;
 		}
 		else if(literalValue.equals(Type.TRUE.toString()))
+		{
+			type = Type.TRUE;
+		}
+		else if(literalValue.equals(Type.QUOTE.toString()))
+		{
+			type = Type.TRUE;
+		}
+		else if(literalValue.equals(Type.COND.toString()))
 		{
 			type = Type.TRUE;
 		}
@@ -150,7 +167,12 @@ class LiteralAtom extends Token
 
 	public static LiteralAtom createNilAtom()
 	{
-		return new LiteralAtom("NIL");
+		return new LiteralAtom(Type.NIL);
+	}
+
+	public static LiteralAtom createTrueAtom()
+	{
+		return new LiteralAtom(Type.TRUE);
 	}
 }
 
@@ -158,14 +180,19 @@ class ErrorAtom extends Token
 {
 	private String errorString;
 
-	ErrorAtom(String s, String msg)
+	ErrorAtom(String msg)
 	{
-		super(s, TokenType.ERROR);
+		super("ERROR: ", TokenType.ERROR);
 		errorString = msg;
 	}
 
 	String getErrorString()
 	{
 		return errorString;
+	}
+
+	public static ErrorAtom createErrorAtom(String msg)
+	{
+		return new ErrorAtom(msg);
 	}
 }
