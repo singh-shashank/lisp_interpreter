@@ -137,11 +137,11 @@ class LiteralAtom extends Token
 		}
 		else if(literalValue.equals(Type.QUOTE.toString()))
 		{
-			type = Type.TRUE;
+			type = Type.QUOTE;
 		}
 		else if(literalValue.equals(Type.COND.toString()))
 		{
-			type = Type.TRUE;
+			type = Type.COND;
 		}
 		else
 		{

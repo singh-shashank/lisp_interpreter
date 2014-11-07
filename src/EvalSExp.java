@@ -33,6 +33,28 @@ class EvalSExp
 		// its a list
 		else if(exp instanceof CSExp)
 		{
+			out.dump("SExp for eval is CSExp");
+			out.dump("car of " + exp.print() + " is " + evalCar(exp).print());
+			if(evalCar(exp).tryAndGetLiteralAtomType()
+				== LiteralAtom.Type.QUOTE)
+			{
+				SExp temp = evalCdr(exp);
+				if(temp instanceof CSExp && !((CSExp)temp).right.isNilAtom())
+				{
+					String msg = "QUOTE expression : " + exp.print();
+					msg += " should contain a list with single element!";
+					retVal = new SExp(ErrorAtom.createErrorAtom(msg));
+					throw new LispIntException(msg, new Exception());
+				}
+				else
+				{
+					retVal = evalCar(temp);
+				}
+			}
+			else
+			{
+				out.dump("NOT YET IMPLEMENTED");
+			}
 			
 		}
 		else

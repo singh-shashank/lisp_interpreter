@@ -30,10 +30,10 @@ class SExp
 		this.isList = isList;
 	}
 
-	public boolean isNilAtom()
+	public boolean isNilAtom() throws LispIntException
 	{
 		boolean ret = false;
-		if(isAtom() && token instanceof LiteralAtom)
+		if(isLiteralAtom())
 			{
 				LiteralAtom l = (LiteralAtom)token;
 				if(l.getType() == LiteralAtom.Type.NIL)
@@ -44,10 +44,10 @@ class SExp
 		return ret;
 	}
 
-	public boolean isTrueAtom()
+	public boolean isTrueAtom() throws LispIntException
 	{
 		boolean ret = false;
-		if(isAtom() && token instanceof LiteralAtom)
+		if(isLiteralAtom())
 			{
 				LiteralAtom l = (LiteralAtom)token;
 				if(l.getType() == LiteralAtom.Type.TRUE)
@@ -58,10 +58,25 @@ class SExp
 		return ret;
 	}
 
-	public boolean isNumeralAtom()
+	public LiteralAtom.Type tryAndGetLiteralAtomType() throws
+												LispIntException
 	{
-		return ( this instanceof Atom && 
-					this.token instanceof NumeralAtom);
+		LiteralAtom.Type ret = LiteralAtom.Type.NOT_PRIMIITVE;
+		if(isLiteralAtom())
+		{
+			ret = ((LiteralAtom)token).getType();
+		}
+		return ret;
+	}
+
+	public boolean isNumeralAtom() throws LispIntException
+	{
+		return ( token.getTokenType() == Token.TokenType.NUMERAL_ATOM);
+	}
+
+	public boolean isLiteralAtom() throws LispIntException
+	{
+		return ( token.getTokenType() == Token.TokenType.LITERAL_ATOM);
 	}
 
 	public boolean isAtom()

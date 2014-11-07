@@ -45,7 +45,7 @@ class OutputHandler{
 			System.out.println();
 			System.out.println("Results below :");
 			System.out.println("--------------------------");
-			System.out.println();
+			System.out.println("\n");
 		}
 
 		System.out.println(prettyPrint);

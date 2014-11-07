@@ -39,7 +39,7 @@ class LispInt
 			out.errorMessage(lie.getCustomMessage());
 			if(out.isDebug)
 			{
-				out.errorMessage("---------------------------------");
+				out.errorMessage("\n---------------------------------");
 				out.errorMessage("\nDumping stack trace");
 				lie.printStackTrace();
 			}
@@ -49,7 +49,7 @@ class LispInt
 			out.errorMessage("\nException Caught - " + e.getMessage());
 			if(out.isDebug)
 			{
-				out.errorMessage("---------------------------------");
+				out.errorMessage("\n---------------------------------");
 				out.errorMessage("\nDumping stack trace");
 				e.printStackTrace();
 			}
