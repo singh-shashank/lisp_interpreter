@@ -215,11 +215,14 @@ class Parser
 			}
 
 			out.dump("\n");
-			out.prettyPrint("Pretty Printing expression ");
+			//out.prettyPrint("Pretty Printing expression ");
 			out.prettyPrint(exp.print());
-			SExp val = EvalSExp.eval(exp, null, null);
-			out.prettyPrint("Printing evaluated expression");
+			SExp val = EvalSExp.eval(exp, 
+				new HashMap<String, Stack<SExp>>(), 
+				new HashMap<String, SExp>());
+			//out.prettyPrint("Printing evaluated expression");
 			out.prettyPrint(val.print());
+			//out.prettyPrint("\n");
 			token = lex.getNextToken();
 		}
 	}

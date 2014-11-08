@@ -1,2 +1,8 @@
 (QUOTE (1 2 3) (4 5))
 (QUOTE (A . B) (1 2))
+
+(QUOTIENT 4 0)
+
+(7 . NIL)
+
+(atom XYZ13 )

@@ -56,7 +56,6 @@ class NumeralAtom extends Token
 	NumeralAtom(String s) throws LispIntException
 	{
 		super(s, TokenType.NUMERAL_ATOM);
-		stringValue = s;
 		try
 		{
 			value = new Integer(s);
@@ -65,6 +64,12 @@ class NumeralAtom extends Token
 		{
 			throw new LispIntException("Not able to convert token '" + stringValue + "'' to numeric atom.", nfe);
 		}
+	}
+
+	NumeralAtom(Integer v)
+	{
+		super(v.toString(), TokenType.NUMERAL_ATOM);
+		value = v;
 	}
 
 	int getValue()
@@ -90,6 +95,21 @@ class LiteralAtom extends Token
 		TRUE("T"),
 		QUOTE("QUOTE"),
 		COND("COND"),
+		DEFUN("DEFUN"),
+		CAR("CAR"),
+		CDR("CDR"),
+		CONS("CONS"),
+		ATOM("ATOM"),
+		EQ("EQ"),
+		NULL("NULL"),
+		INT("INT"),
+		PLUS("PLUS"),
+		MINUS("MINUS"),
+		TIMES("TIMES"),
+		QUOTIENT("QUOTIENT"),
+		REMAINDER("REMAINDER"),
+		LESS("LESS"),
+		GREATER("GREATER"),
 		NOT_PRIMIITVE("NOT_PRIMITIVE_TYPE");
 
 		private String value;
@@ -142,6 +162,66 @@ class LiteralAtom extends Token
 		else if(literalValue.equals(Type.COND.toString()))
 		{
 			type = Type.COND;
+		}
+		else if(literalValue.equals(Type.DEFUN.toString()))
+		{
+			type = Type.DEFUN;
+		}
+		else if(literalValue.equals(Type.CAR.toString()))
+		{
+			type = Type.CAR;
+		}
+		else if(literalValue.equals(Type.CDR.toString()))
+		{
+			type = Type.CDR;
+		}
+		else if(literalValue.equals(Type.CONS.toString()))
+		{
+			type = Type.CONS;
+		}
+		else if(literalValue.equals(Type.ATOM.toString()))
+		{
+			type = Type.ATOM;
+		}
+		else if(literalValue.equals(Type.EQ.toString()))
+		{
+			type = Type.EQ;
+		}
+		else if(literalValue.equals(Type.NULL.toString()))
+		{
+			type = Type.NULL;
+		}
+		else if(literalValue.equals(Type.INT.toString()))
+		{
+			type = Type.INT;
+		}
+		else if(literalValue.equals(Type.PLUS.toString()))
+		{
+			type = Type.PLUS;
+		}
+		else if(literalValue.equals(Type.MINUS.toString()))
+		{
+			type = Type.MINUS;
+		}
+		else if(literalValue.equals(Type.QUOTIENT.toString()))
+		{
+			type = Type.QUOTIENT;
+		}
+		else if(literalValue.equals(Type.REMAINDER.toString()))
+		{
+			type = Type.REMAINDER;
+		}
+		else if(literalValue.equals(Type.TIMES.toString()))
+		{
+			type = Type.TIMES;
+		}
+		else if(literalValue.equals(Type.LESS.toString()))
+		{
+			type = Type.LESS;
+		}
+		else if(literalValue.equals(Type.GREATER.toString()))
+		{
+			type = Type.GREATER;
 		}
 		else
 		{
