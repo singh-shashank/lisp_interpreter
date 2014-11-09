@@ -39,7 +39,7 @@ class EvalSExp
 		else if(exp instanceof CSExp)
 		{
 			out.dump("SExp for eval is CSExp");
-			out.dump("car of " + exp.print() + " is " + evalCar(exp).print());
+			//out.dump("car of " + exp.print() + " is " + evalCar(exp).print());
 			if(evalCar(exp).tryAndGetLiteralAtomType()
 				== LiteralAtom.Type.QUOTE)
 			{
@@ -55,6 +55,34 @@ class EvalSExp
 				{
 					retVal = evalCar(temp);
 				}
+			}
+			else if(evalCar(exp).tryAndGetLiteralAtomType()
+				== LiteralAtom.Type.COND)
+			{
+				retVal = evcon(evalCdr(exp), a, d);
+			}
+			else if(evalCar(exp).tryAndGetLiteralAtomType()
+				== LiteralAtom.Type.DEFUN)
+			{
+				String defunName = (evalCar(evalCdr(exp))).print();
+				if(d.containsKey(defunName))
+				{
+					String msg = "DEFUN already defined for " + defunName;
+					throw new LispIntException(msg, new Exception());
+				}
+				else
+				{
+					SExp formalBodyList = evalCdr(evalCdr(exp));
+					SExp formalList = evalCar(formalBodyList);
+					SExp bodyList = evalCar(evalCdr(formalBodyList));
+					//out.dump("formalList " + formalList.print());
+					//out.dump("bodyList " + bodyList.print());
+					SExp combinedSExp = evalCONS(formalList, bodyList);
+					//out.dump("combinedSExp " + combinedSExp.print());
+					d.put(defunName, combinedSExp);
+					retVal = evalCar(evalCdr(exp)); // DEFUN name
+				}
+
 			}
 			else
 			{
@@ -83,6 +111,27 @@ class EvalSExp
 				evlist(evalCdr(x), a, d));
 		}
 
+		return retVal;
+	}
+
+	public static SExp evcon(SExp x,
+		HashMap<String, Stack<SExp>> a, 
+		HashMap<String, SExp> d) throws LispIntException
+	{
+		if(evalNULL(x).isTrueAtom())
+		{
+			String msg = "COND has to be followed by a boolean condition and expression! ";
+			throw new LispIntException(msg, new Exception());
+		}
+		SExp retVal = new SExp();
+		if(eval(evalCar(evalCar(x)), a, d).isTrueAtom())
+		{
+			retVal = eval(evalCar(evalCdr(evalCar(x))), a, d);
+		}
+		else
+		{
+			retVal = evcon(evalCdr(x), a, d);
+		}
 		return retVal;
 	}
 
@@ -132,8 +181,22 @@ class EvalSExp
 						f.tryAndGetLiteralAtomType());
 					break;
 				default :
-					out.dump(f.print() + ": NOT YET IMPLEMENTED");
+					SExp combinedSExp = getValFromDList(f.print(), d);
+					// Update
+					HashMap<String, Stack<SExp>> updatedA = 
+									new HashMap<String, Stack<SExp>>(a);
+					addPairs(evalCar(combinedSExp), x, updatedA);
+					retVal = eval(evalCdr(combinedSExp),
+									updatedA,
+									d);
+					break;
 			}
+		}
+		else
+		{
+			String msg = "IN apply() : " + f.print();
+			msg += " should have been an ATOM!";
+			throw new LispIntException(msg, new Exception()); 
 		}
 		return retVal;
 	}
@@ -399,6 +462,22 @@ class EvalSExp
 			String msg = "In getVal()- shouldn't have reached here! Pre-condition getBound not checked.";
 			msg += key + " is not defined in the 'a' list";
 			retVal = new SExp(ErrorAtom.createErrorAtom(msg));
+			throw new LispIntException(msg, new Exception());
+		}
+		return retVal;
+	}
+
+	public static SExp getValFromDList(String key, 
+		HashMap<String, SExp> d) throws LispIntException
+	{
+		SExp retVal;
+		if(d.containsKey(key))
+		{
+			retVal = d.get(key);
+		}
+		else
+		{
+			String msg = "Trying to call undefined user function : " + key;
 			throw new LispIntException(msg, new Exception());
 		}
 		return retVal;

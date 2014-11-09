@@ -1,3 +1,1 @@
-
-
-
+(DEFUN SILLY (A B) (PLUS A B))

@@ -10,6 +10,7 @@ class Parser
 	private int[][] parseTable = new int[Symbol.NT_END.ordinal()][Symbol.T_END.ordinal()-Symbol.NT_END.ordinal()];
 	Stack<Symbol> symStack = new Stack<Symbol>();
 	Stack<SExp> sExpStack = new Stack<SExp>();
+	HashMap<String, SExp> dList = new HashMap<String, SExp>();
 
 	public Parser(Lex l)
 	{
@@ -217,9 +218,11 @@ class Parser
 			out.dump("\n");
 			//out.prettyPrint("Pretty Printing expression ");
 			out.prettyPrint(exp.print());
+			HashMap<String, Stack<SExp>> aList = new HashMap<String, Stack<SExp>>();
+
 			SExp val = EvalSExp.eval(exp, 
-				new HashMap<String, Stack<SExp>>(), 
-				new HashMap<String, SExp>());
+				aList, 
+				dList);
 			//out.prettyPrint("Printing evaluated expression");
 			out.prettyPrint(val.print());
 			//out.prettyPrint("\n");

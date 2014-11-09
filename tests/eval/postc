@@ -47,3 +47,9 @@
 
 (CONS (QUOTE 7) (QUOTE 8))
 (CONS (CAR (QUOTE (7 . 10))) (CDR (QUOTE (7 . 10))))
+
+(plus (plus 3 5) (times 4 4))
+(eq t nil)
+(EQ NIL NIL)
+(EQ T T)
+(EQ +2 (PLUS 1 1))
