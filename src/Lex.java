@@ -215,7 +215,7 @@ class Lex {
     {
         if(out.isContOnError)
         {
-            tokensQ.add(new ErrorAtom(value, msg));
+            tokensQ.add(new ErrorAtom(msg));
         }
         else
         {
