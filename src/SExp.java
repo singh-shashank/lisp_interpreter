@@ -30,6 +30,16 @@ class SExp
 		this.isList = isList;
 	}
 
+	public boolean isUndefined() throws LispIntException
+	{
+		boolean ret = true;
+		if(this instanceof CSExp || token.getTokenType() != Token.TokenType.UNDEF)
+		{
+			ret = false;
+		}
+		return ret;
+	}
+
 	public boolean isNilAtom() throws LispIntException
 	{
 		boolean ret = false;
@@ -88,6 +98,21 @@ class SExp
 	{
 		//Parser.out.dump("Calling SExp print");
 		return token.getTokenStringValue();
+	}
+
+	@Override
+	public String toString()
+	{
+		String ret = "";
+		try
+		{
+			ret = print();
+		}
+		catch(LispIntException e)
+		{
+			out.dump("ah!");
+		}
+		return ret;
 	}
 
 }

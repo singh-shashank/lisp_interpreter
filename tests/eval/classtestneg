@@ -1,0 +1,5 @@
+(plus (1 2) (3 4))
+
+(DEFUN CONS (X Y) (CONS X Y))
+
+(DEFUN F (X Y) (PLUS X Y) (MINUS X Y))

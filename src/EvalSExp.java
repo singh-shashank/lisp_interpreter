@@ -64,6 +64,12 @@ class EvalSExp
 			else if(evalCar(exp).tryAndGetLiteralAtomType()
 				== LiteralAtom.Type.DEFUN)
 			{
+				if((evalCar(evalCdr(exp))).tryAndGetLiteralAtomType() 
+					!= LiteralAtom.Type.NOT_PRIMIITVE)
+				{
+					String msg = "Cannot define a DEFUN using pre-defined keywords";
+					throw new LispIntException(msg, new Exception());
+				}
 				String defunName = (evalCar(evalCdr(exp))).print();
 				if(d.containsKey(defunName))
 				{
@@ -75,11 +81,21 @@ class EvalSExp
 					SExp formalBodyList = evalCdr(evalCdr(exp));
 					SExp formalList = evalCar(formalBodyList);
 					SExp bodyList = evalCar(evalCdr(formalBodyList));
-					//out.dump("formalList " + formalList.print());
-					//out.dump("bodyList " + bodyList.print());
-					SExp combinedSExp = evalCONS(formalList, bodyList);
-					//out.dump("combinedSExp " + combinedSExp.print());
-					d.put(defunName, combinedSExp);
+
+					//if(formalList.isUndefined() || bodyList.isUndefined())
+					//{
+					//	String msg = "DEFUN expects a formals list and body list!";
+					//	throw new LispIntException(msg, new Exception());
+					//}
+
+					if(!bodyList.isNilAtom())
+					{
+						//out.dump("formalList " + formalList.print());
+						//out.dump("bodyList " + bodyList.print());
+						SExp combinedSExp = evalCONS(formalList, bodyList);
+						//out.dump("combinedSExp " + combinedSExp.print());
+						d.put(defunName, combinedSExp);
+					}
 					retVal = evalCar(evalCdr(exp)); // DEFUN name
 				}
 
@@ -94,8 +110,9 @@ class EvalSExp
 		}
 		else
 		{
-			out.dumpError("Shouldn't have reached here -- SExp passed to eval()"
-				+ " is neither Atom nor CSExp");
+			String msg = "Shouldn't have reached here -- SExp passed to eval()"
+				+ " is neither Atom nor CSExp";
+			throw new LispIntException(msg, new Exception());
 		}
 		return retVal;
 	}
@@ -182,10 +199,22 @@ class EvalSExp
 					break;
 				default :
 					SExp combinedSExp = getValFromDList(f.print(), d);
+					//out.dump("Apply called for " + f.print());
+					//out.dump("formalList = " + evalCar(combinedSExp).print());
+					//out.dump("actualList = " + x.print());
 					// Update
 					HashMap<String, Stack<SExp>> updatedA = 
 									new HashMap<String, Stack<SExp>>(a);
 					addPairs(evalCar(combinedSExp), x, updatedA);
+
+					//out.dump("Dumping a list after addPairs");
+
+					// for(String key : updatedA.keySet())
+					// {
+					// 	Stack<SExp> temp = updatedA.get(key);
+					// 	out.dump("For key :" + key + " values are :" + Arrays.toString(temp.toArray()));
+					// }
+					// out.dump("-----end of list-----");
 					retVal = eval(evalCdr(combinedSExp),
 									updatedA,
 									d);
@@ -401,14 +430,16 @@ class EvalSExp
 		SExp x = evalCar(varList);
 		SExp y = evalCar(valueList);
 
-		if(evalNULL(x).isTrueAtom() || evalNULL(y).isTrueAtom())
+		//if(evalNULL(x).isTrueAtom() || evalNULL(y).isTrueAtom())
+		if(x.isUndefined() || y.isUndefined())
 		{
 			String msg = "addPairs called with different sizes of formals and ";
 			msg += "actual lists!";
+			msg +="\n varList : " + varList.print() + " valueList : " + valueList.print();
 			throw new LispIntException(msg, new Exception());
 		}
 
-		if(x.isAtom() && y.isAtom())
+		if(x.isAtom())
 		{
 			if(a.containsKey(x.getToken().getTokenStringValue()))
 			{

@@ -1,0 +1,16 @@
+(plus 3 4)
+
+(plus 5 6)
+
+(DEFUN F1 (X Y) ())
+
+(DEFUN F1 (X Y) (CONS X Y))
+
+(DEFUN F2 (X X) (CONS X Y))
+
+
+(cond ((eq 1 2) 4) ((eq 2 2) 5))
+()
+NIL
+(quote (()))
+(quote (()()))

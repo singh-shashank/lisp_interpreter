@@ -25,7 +25,7 @@
 (GREATER 5 6)
 
 (ATOM 5)
-(ATOM (5 6))
+(ATOM (QUOTE (5 6)))
 
 (PLUS (PLUS 3 5) (car (quote (7 . 8))))
 
@@ -41,7 +41,7 @@
 
 (null NIL)
 (null ())
-(null (()))
+(null (QUOTE (())))
 
 (eq +4 4)
 
@@ -53,3 +53,16 @@
 (EQ NIL NIL)
 (EQ T T)
 (EQ +2 (PLUS 1 1))
+
+
+(DEFUN MEM (X LIST)
+	(COND ( (NULL LIST) NIL)
+		  ( T (COND 
+		  		((EQ X (CAR LIST)) T)
+		  		(T (MEM X (CDR LIST)))
+		  		)
+		  )
+	)
+)
+
+(MEM 4 (QUOTE(2 3 4)))

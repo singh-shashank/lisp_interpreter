@@ -41,7 +41,7 @@ class LispInt
 			{
 				out.errorMessage("\n---------------------------------");
 				out.errorMessage("\nDumping stack trace");
-				lie.printStackTrace();
+				//lie.printStackTrace();
 			}
 		}
 		catch(Exception e)
@@ -51,7 +51,7 @@ class LispInt
 			{
 				out.errorMessage("\n---------------------------------");
 				out.errorMessage("\nDumping stack trace");
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 		finally

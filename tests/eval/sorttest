@@ -1,0 +1,71 @@
+(defun removeElement (n L) 
+    (cond 
+        ((null L) 
+            (quote NIL)
+        ) 
+        ((eq n (car L)) 
+            (removeElement n (cdr L))
+        ) 
+        (t 
+            (cons (car L) (removeElement n (cdr L)))
+        )
+    )
+)
+
+(defun removeList (M L) 
+    (cond 
+        ((null M) 
+            L
+        ) 
+        (t 
+            (removeList (cdr M) (removeElement (car M) L))
+        )
+    )
+)
+
+(defun insertElement (n L) 
+    (cond 
+        ((null L) 
+            (cons n (quote NIL))
+        ) 
+        ((less n (car L)) 
+            (cons n L)
+        ) 
+        ((eq n (car L)) 
+            (cons n L)
+        ) 
+        (t 
+            (cons (car L) (insertElement n (cdr L)))
+        )
+    )
+)
+
+(defun insertList (M L) 
+    (cond 
+        ((null M) 
+            L
+        ) 
+        (t 
+            (insertList (cdr M) (insertElement (car M) L))
+        )
+    )
+)
+
+(defun eliminateNsort (L1 L2) 
+    (insertList (removeList L2 L1) (quote NIL))
+)
+
+(eliminateNsort 
+    (cons (plus 3 2) 
+        (cons (minus 11 4) 
+            (cons (quotient 28 3) 
+                (cons (remainder 4 -3) 
+                    (cons (times -1 -2) 
+                        (quote (-7 4 -1 9 8 1 3 -4))
+                    )
+                )
+            )
+        )
+    ) 
+    (quote (9 -2 2 6 4))
+)

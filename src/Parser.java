@@ -217,7 +217,8 @@ class Parser
 
 			out.dump("\n");
 			//out.prettyPrint("Pretty Printing expression ");
-			out.prettyPrint(exp.print());
+			//out.prettyPrint("\n");
+			//out.prettyPrint(exp.print());
 			HashMap<String, Stack<SExp>> aList = new HashMap<String, Stack<SExp>>();
 
 			SExp val = EvalSExp.eval(exp, 
