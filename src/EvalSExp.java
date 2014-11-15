@@ -8,11 +8,11 @@ class EvalSExp
 		HashMap<String, Stack<SExp>> a, 
 		HashMap<String, SExp> d) throws LispIntException // TODO : fix this
 	{
+		out.dump("Eval : " + exp.print());
 		// exp is an atom
 		SExp retVal = new SExp();
 		if(exp.isAtom())
 		{
-			out.dump("SExp for eval is atom");
 			if(exp.isTrueAtom())
 			{
 				retVal = new Atom(LiteralAtom.createTrueAtom());
@@ -38,7 +38,6 @@ class EvalSExp
 		// its a list
 		else if(exp instanceof CSExp)
 		{
-			out.dump("SExp for eval is CSExp");
 			//out.dump("car of " + exp.print() + " is " + evalCar(exp).print());
 			if(evalCar(exp).tryAndGetLiteralAtomType()
 				== LiteralAtom.Type.QUOTE)
@@ -121,6 +120,7 @@ class EvalSExp
 		HashMap<String, Stack<SExp>> a, 
 		HashMap<String, SExp> d) throws LispIntException
 	{
+		out.dump("Evlist : " + x.print());
 		SExp retVal = new Atom(LiteralAtom.createNilAtom());
 		if(!x.isNilAtom())
 		{
@@ -135,6 +135,7 @@ class EvalSExp
 		HashMap<String, Stack<SExp>> a, 
 		HashMap<String, SExp> d) throws LispIntException
 	{
+		out.dump("Evcon : " + x.print());
 		if(evalNULL(x).isTrueAtom())
 		{
 			String msg = "COND has to be followed by a boolean condition and expression! ";
@@ -156,6 +157,7 @@ class EvalSExp
 		HashMap<String, Stack<SExp>> a, 
 		HashMap<String, SExp> d) throws LispIntException
 	{
+		out.dump("apply : " + f.print() + " on " + x.print());
 		SExp retVal = new SExp();
 		if(f.isAtom())
 		{
@@ -199,22 +201,29 @@ class EvalSExp
 					break;
 				default :
 					SExp combinedSExp = getValFromDList(f.print(), d);
-					//out.dump("Apply called for " + f.print());
-					//out.dump("formalList = " + evalCar(combinedSExp).print());
-					//out.dump("actualList = " + x.print());
+					out.dump("Apply called for " + f.print());
+					out.dump("formalList = " + evalCar(combinedSExp).print());
+					out.dump("actualList = " + x.print());
 					// Update
 					HashMap<String, Stack<SExp>> updatedA = 
-									new HashMap<String, Stack<SExp>>(a);
+									new HashMap<String, Stack<SExp>>();
+					for(String key : a.keySet())
+					{
+						Stack<SExp> temp = new Stack<SExp>();
+						temp.push(a.get(key).peek());
+						updatedA.put(key, temp);
+					}
+
 					addPairs(evalCar(combinedSExp), x, updatedA);
 
-					//out.dump("Dumping a list after addPairs");
+					out.dump("Dumping a list after addPairs");
 
-					// for(String key : updatedA.keySet())
-					// {
-					// 	Stack<SExp> temp = updatedA.get(key);
-					// 	out.dump("For key :" + key + " values are :" + Arrays.toString(temp.toArray()));
-					// }
-					// out.dump("-----end of list-----");
+					for(String key : updatedA.keySet())
+					{
+						Stack<SExp> temp = updatedA.get(key);
+						out.dump("For key :" + key + " values are :" + Arrays.toString(temp.toArray()));
+					}
+					out.dump("-----end of list-----");
 					retVal = eval(evalCdr(combinedSExp),
 									updatedA,
 									d);

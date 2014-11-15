@@ -66,3 +66,11 @@
 )
 
 (MEM 4 (QUOTE(2 3 4)))
+
+(DEFUN FIBONACCI (N) 												
+						
+   (COND 
+      ((EQ N 0) 1)
+      ((EQ N 1) 1)
+      (T (PLUS (FIBONACCI (MINUS N 1)) (FIBONACCI (MINUS N 2))))))
+(FIBONACCI 6)		
