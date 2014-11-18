@@ -12,7 +12,7 @@
       ((EQ N 0) 1)
       ((EQ N 1) 1)
       (T (PLUS (FIBONACCI (MINUS N 1)) (FIBONACCI (MINUS N 2))))))
-(FIBONACCI 1)														
+(FIBONACCI 6)														
 							
 (DEFUN NNIL (N) 														
 							

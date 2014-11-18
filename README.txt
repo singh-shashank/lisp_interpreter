@@ -34,7 +34,7 @@ Following are few flags that supported by the interpreter:
 
 -cont -> is a flag for continuing on errors (not fully supported in this version yet)
 
-NOTE: This interpreter doesn't yet support an interactive mode where an expression is entered at press of the return key. I am planning to do that for the final submission, but for this submission, you can enter the input at the console but for marking the end of the input, please type in "#EOF" after which the complete input program will be evaluated
+NOTE: This interpreter doesn't yet support an interactive mode where an expression is entered at press of the return key. For this submission, you can enter the input at the console but for marking the end of the input, please type in "#EOF" after which the complete input program will be evaluated
 
 
 3. Design
@@ -124,6 +124,15 @@ __________________
 
 - Output handler class interfaces with the system's output console and is responsible for managing and printing debug statements and other outputs of the interpreter.
 
+d) Evaluation of SExp
+______________________
+
+Implementation of this was merely coding the recursive math functions specified in
+slides. The D-List is maintained as a map between function name ans SExp having 
+formals and body. The A-List is maintained as map between variable and stack of SExp
+with the top most SExp returning the most recent value bounded to variable.
+
+Majority of the error conditions are checked - preventing using interpreter primitives. checking it DEFUN has all a valid formal and body list.
 
 4. Testing
 -----------

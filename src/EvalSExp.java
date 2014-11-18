@@ -70,33 +70,33 @@ class EvalSExp
 					throw new LispIntException(msg, new Exception());
 				}
 				String defunName = (evalCar(evalCdr(exp))).print();
-				if(d.containsKey(defunName))
-				{
-					String msg = "DEFUN already defined for " + defunName;
-					throw new LispIntException(msg, new Exception());
-				}
-				else
-				{
-					SExp formalBodyList = evalCdr(evalCdr(exp));
-					SExp formalList = evalCar(formalBodyList);
-					SExp bodyList = evalCar(evalCdr(formalBodyList));
+				// if(d.containsKey(defunName))
+				// {
+				// 	String msg = "DEFUN already defined for " + defunName;
+				// 	throw new LispIntException(msg, new Exception());
+				// }
+				//else
+				//{
+				SExp formalBodyList = evalCdr(evalCdr(exp));
+				SExp formalList = evalCar(formalBodyList);
+				SExp bodyList = evalCar(evalCdr(formalBodyList));
 
-					//if(formalList.isUndefined() || bodyList.isUndefined())
-					//{
-					//	String msg = "DEFUN expects a formals list and body list!";
-					//	throw new LispIntException(msg, new Exception());
-					//}
+				//if(formalList.isUndefined() || bodyList.isUndefined())
+				//{
+				//	String msg = "DEFUN expects a formals list and body list!";
+				//	throw new LispIntException(msg, new Exception());
+				//}
 
-					if(!bodyList.isNilAtom())
-					{
-						//out.dump("formalList " + formalList.print());
-						//out.dump("bodyList " + bodyList.print());
-						SExp combinedSExp = evalCONS(formalList, bodyList);
-						//out.dump("combinedSExp " + combinedSExp.print());
-						d.put(defunName, combinedSExp);
-					}
-					retVal = evalCar(evalCdr(exp)); // DEFUN name
+				if(!bodyList.isNilAtom())
+				{
+					//out.dump("formalList " + formalList.print());
+					//out.dump("bodyList " + bodyList.print());
+					SExp combinedSExp = evalCONS(formalList, bodyList);
+					//out.dump("combinedSExp " + combinedSExp.print());
+					d.put(defunName, combinedSExp);
 				}
+				retVal = evalCar(evalCdr(exp)); // DEFUN name
+				//}
 
 			}
 			else
